@@ -6,7 +6,7 @@ public class Messages {
 	public static final String BRAND = "Marka ";
 	public static final String CAR = "Araba ";
 	public static final String COLOR = "Renk ";
-	public static final String CORPORATECUSTOMER = "Kurumsal müşteri ";
+	public static final String CORPORATE_CUSTOMER = "Kurumsal müşteri ";
 	public static final String INDIVIDUALCUSTOMER = "Bireysel müşteri ";
 	public static final String RENTAL = "Kiralama bilgisi ";
 	public static final String USER = "Kullanıcı ";
@@ -15,11 +15,13 @@ public class Messages {
 	public static final String REPAIR = "Bakım bilgisi ";
 	public static final String INVOICE = "Fatura ";
 	public static final String DAMAGE = "Hasar kaydı ";
+	public static final String ADDITIONAL_SERVICE = "Ek hizmet ";
+	
 	
 	public static final String BRANDS = "Markalar ";
 	public static final String CARS = "Arabalar ";
 	public static final String COLORS = "Renkler ";
-	public static final String CORPORATECUSTOMERS = "Kurumsal müşteriler ";
+	public static final String CORPORATE_CUSTOMERS = "Kurumsal müşteriler ";
 	public static final String INDIVIDUALCUSTOMERS = "Bireysel müşteriler ";
 	public static final String RENTALS = "Kiralama bilgileri ";
 	public static final String USERS = "Kullanıcılar ";
@@ -29,7 +31,9 @@ public class Messages {
 	public static final String INVOICES = "Faturalar ";
 	public static final String EMAILS = "E-postalar ";
 	public static final String DAMAGES = "Hasar kayıtları ";
+	public static final String ADDITIONAL_SERVICES = "Ek hizmetler ";
 
+	
 	// Methods
 	public static final String ADD = "eklendi.";
 	public static final String UPDATE = "güncellendi.";

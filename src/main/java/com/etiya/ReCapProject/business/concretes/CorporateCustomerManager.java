@@ -36,13 +36,13 @@ public class CorporateCustomerManager implements CorporateCustomerService {
 	@Override
 	public DataResult<List<CorporateCustomer>> getAll() {
 		return new SuccessDataResult<List<CorporateCustomer>>(this.corporateCustomerDao.findAll(),
-				Messages.CORPORATECUSTOMERS + Messages.LIST);
+				Messages.CORPORATE_CUSTOMERS + Messages.LIST);
 	}
 
 	@Override
 	public DataResult<CorporateCustomer> getById(int corporateCustomerId) {
 		return new SuccessDataResult<CorporateCustomer>(this.corporateCustomerDao.getById(corporateCustomerId),
-				Messages.CORPORATECUSTOMER + Messages.LIST);
+				Messages.CORPORATE_CUSTOMER + Messages.LIST);
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class CorporateCustomerManager implements CorporateCustomerService {
 		corporateCustomer.setApplicationUser(applicationUser);
 
 		this.corporateCustomerDao.save(corporateCustomer);
-		return new SuccessResult(Messages.CORPORATECUSTOMER + Messages.ADD);
+		return new SuccessResult(Messages.CORPORATE_CUSTOMER + Messages.ADD);
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class CorporateCustomerManager implements CorporateCustomerService {
 		corporateCustomer.setApplicationUser(applicationUser);
 
 		this.corporateCustomerDao.save(corporateCustomer);
-		return new SuccessResult(Messages.CORPORATECUSTOMER + Messages.UPDATE);
+		return new SuccessResult(Messages.CORPORATE_CUSTOMER + Messages.UPDATE);
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class CorporateCustomerManager implements CorporateCustomerService {
 				.getById(deleteCorporateCustomerRequest.getCorporateCustomerId());
 
 		this.corporateCustomerDao.delete(corporateCustomer);
-		return new SuccessResult(Messages.CORPORATECUSTOMER + Messages.DELETE);
+		return new SuccessResult(Messages.CORPORATE_CUSTOMER + Messages.DELETE);
 	}
 	
 	@Override

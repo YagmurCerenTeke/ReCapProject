@@ -38,6 +38,9 @@ public class CreateRentalRequest {
 	private int returnKm;
 	
 	@NotNull(message = Messages.NOTNULL)
+	private boolean returned;
+	
+	@NotNull(message = Messages.NOTNULL)
 	private boolean saveCreditCard;
 	
 	@NotNull(message = Messages.NOTNULL)

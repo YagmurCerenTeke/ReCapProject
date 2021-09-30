@@ -11,8 +11,10 @@ import com.etiya.ReCapProject.business.abstracts.IndividualCustomerService;
 import com.etiya.ReCapProject.business.abstracts.UserService;
 import com.etiya.ReCapProject.business.constants.Messages;
 import com.etiya.ReCapProject.core.utilities.business.BusinessRules;
+import com.etiya.ReCapProject.core.utilities.results.DataResult;
 import com.etiya.ReCapProject.core.utilities.results.ErrorResult;
 import com.etiya.ReCapProject.core.utilities.results.Result;
+import com.etiya.ReCapProject.core.utilities.results.SuccessDataResult;
 import com.etiya.ReCapProject.core.utilities.results.SuccessResult;
 import com.etiya.ReCapProject.entities.concretes.ApplicationUser;
 import com.etiya.ReCapProject.entities.requests.authenticationRequests.CreateCorporateCustomerRegisterRequest;
@@ -48,18 +50,13 @@ public class AuthenticationManager implements AuthenticationService {
 			return result;
 		}
 
-		ApplicationUser applicationUser = new ApplicationUser();
-		applicationUser.setEmail(createIndividualCustomerRegisterRequest.getEmail());
-		applicationUser.setPassword(createIndividualCustomerRegisterRequest.getPassword());
-
-		this.userService.add(applicationUser);
-
 		CreateIndividualCustomerRequest individualCustomerRequest = new CreateIndividualCustomerRequest();
 		individualCustomerRequest.setFirstName(createIndividualCustomerRegisterRequest.getFirstName());
 		individualCustomerRequest.setLastName(createIndividualCustomerRegisterRequest.getLastName());
 		individualCustomerRequest
 				.setNationalIdentityNumber(createIndividualCustomerRegisterRequest.getNationalIdentityNumber());
-		individualCustomerRequest.setUserId(applicationUser.getUserId());
+		individualCustomerRequest.setUserId(this.createUser(createIndividualCustomerRegisterRequest.getEmail(),
+				createIndividualCustomerRegisterRequest.getPassword()).getData().getUserId());
 		this.individualCustomerService.add(individualCustomerRequest);
 
 		return new SuccessResult(Messages.INDIVIDUALCUSTOMERREGISTER);
@@ -67,24 +64,19 @@ public class AuthenticationManager implements AuthenticationService {
 
 	@Override
 	public Result corporateCustomerRegister(CreateCorporateCustomerRegisterRequest createCorporateCustomerRequest) {
-		var result = BusinessRules.run(checkIfEmailExists(createCorporateCustomerRequest.getEmail()),
-				confirmPassword(createCorporateCustomerRequest.getPassword(),
-						createCorporateCustomerRequest.getPasswordConfirm()));
+		var result = BusinessRules.run(checkIfEmailExists(createCorporateCustomerRequest.getEmail()), confirmPassword(
+				createCorporateCustomerRequest.getPassword(), createCorporateCustomerRequest.getPasswordConfirm()));
 
 		if (result != null) {
 			return result;
 		}
-		
-		ApplicationUser applicationUser = new ApplicationUser();
-		applicationUser.setEmail(createCorporateCustomerRequest.getEmail());
-		applicationUser.setPassword(createCorporateCustomerRequest.getPassword());
-
-		this.userService.add(applicationUser);
 
 		CreateCorporateCustomerRequest corporateCustomerRequest = new CreateCorporateCustomerRequest();
 		corporateCustomerRequest.setCompanyName(createCorporateCustomerRequest.getCompanyName());
 		corporateCustomerRequest.setTaxNumber(createCorporateCustomerRequest.getTaxNumber());
-		corporateCustomerRequest.setUserId(applicationUser.getUserId());
+		corporateCustomerRequest.setUserId(
+				this.createUser(createCorporateCustomerRequest.getEmail(), createCorporateCustomerRequest.getPassword())
+						.getData().getUserId());
 
 		this.corporateCustomerService.add(corporateCustomerRequest);
 
@@ -103,6 +95,16 @@ public class AuthenticationManager implements AuthenticationService {
 		return new SuccessResult(Messages.LOGINOK);
 	}
 
+	private DataResult<ApplicationUser> createUser(String email, String password) {
+
+		ApplicationUser applicationUser = new ApplicationUser();
+		applicationUser.setEmail(email);
+		applicationUser.setPassword(password);
+
+		this.userService.add(applicationUser);
+		return new SuccessDataResult<ApplicationUser>(applicationUser);
+	}
+	
 	private Result checkIfEmailExists(String registerEmail) {
 		List<String> emails = this.userService.findAllEmail().getData();
 		for (String email : emails) {
@@ -128,5 +130,7 @@ public class AuthenticationManager implements AuthenticationService {
 		}
 		return new SuccessResult();
 	}
+
+
 
 }

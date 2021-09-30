@@ -13,7 +13,7 @@ public interface CarDamageService {
 	
 	DataResult<List<CarDamage>> getAll();
 	
-	 DataResult<List<CarDamage>> getByCarId(int carId);
+	DataResult<List<CarDamage>> getByCarId(int carId);
 
 	Result add(CreateCarDamageRequest createCarDamageRequest);
 

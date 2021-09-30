@@ -37,7 +37,8 @@ public class CreditCardManager implements CreditCardService {
 
 	@Override
 	public DataResult<List<CreditCard>> getAll() {
-		return new SuccessDataResult<List<CreditCard>>(this.creditCardDao.findAll(), Messages.CREDITCARDS + Messages.LIST);
+		return new SuccessDataResult<List<CreditCard>>(this.creditCardDao.findAll(),
+				Messages.CREDITCARDS + Messages.LIST);
 	}
 
 	@Override
@@ -67,13 +68,14 @@ public class CreditCardManager implements CreditCardService {
 		creditCard.setApplicationUser(this.userService.getById(createCreditCardRequest.getUserId()).getData());
 		creditCard.setCvc(createCreditCardRequest.getCvc());
 		creditCard.setExpirationDate(createCreditCardRequest.getExpirationDate());
+		creditCard.setNameOnCard(createCreditCardRequest.getNameOnCard());
 
 		this.creditCardDao.save(creditCard);
 		return new SuccessResult(Messages.CREDITCARD + Messages.ADD);
 	}
 
 	@Override
-	public Result update(UpdateCreditCardRequest updateCreditCardRequest){
+	public Result update(UpdateCreditCardRequest updateCreditCardRequest) {
 		var result = BusinessRules.run(checkCreditCardFormat(updateCreditCardRequest.getCreditCardNumber(),
 				updateCreditCardRequest.getCvc(), updateCreditCardRequest.getExpirationDate()));
 
@@ -85,7 +87,8 @@ public class CreditCardManager implements CreditCardService {
 		creditCard.setApplicationUser(this.userService.getById(updateCreditCardRequest.getUserId()).getData());
 		creditCard.setCvc(updateCreditCardRequest.getCvc());
 		creditCard.setExpirationDate(updateCreditCardRequest.getExpirationDate());
-
+		creditCard.setNameOnCard(updateCreditCardRequest.getNameOnCard());
+		
 		this.creditCardDao.save(creditCard);
 		return new SuccessResult(Messages.CREDITCARD + Messages.UPDATE);
 	}
@@ -94,9 +97,9 @@ public class CreditCardManager implements CreditCardService {
 	public Result delete(DeleteCreditCardRequest deleteCreditCardRequest) {
 		CreditCard creditCard = creditCardDao.getById(deleteCreditCardRequest.getCreditCardId());
 		this.creditCardDao.delete(creditCard);
-		return  new SuccessResult(Messages.CREDITCARD + Messages.DELETE);
+		return new SuccessResult(Messages.CREDITCARD + Messages.DELETE);
 	}
-	
+
 	@Override
 	public Result checkCreditCardFormat(String creditCardNumber, String cvc, String expirationDate) {
 

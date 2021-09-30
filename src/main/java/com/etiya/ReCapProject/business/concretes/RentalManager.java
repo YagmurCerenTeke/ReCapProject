@@ -1,13 +1,19 @@
 package com.etiya.ReCapProject.business.concretes;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.etiya.ReCapProject.business.abstracts.AdditionalServiceService;
 import com.etiya.ReCapProject.business.abstracts.CarService;
 import com.etiya.ReCapProject.business.abstracts.CorporateCustomerService;
 import com.etiya.ReCapProject.business.abstracts.CreditCardService;
+import com.etiya.ReCapProject.business.abstracts.FakePosService;
 import com.etiya.ReCapProject.business.abstracts.FindeksScoreService;
 import com.etiya.ReCapProject.business.abstracts.IndividualCustomerService;
 import com.etiya.ReCapProject.business.abstracts.RentalService;
@@ -25,6 +31,7 @@ import com.etiya.ReCapProject.entities.concretes.Car;
 import com.etiya.ReCapProject.entities.concretes.CorporateCustomer;
 import com.etiya.ReCapProject.entities.concretes.CreditCard;
 import com.etiya.ReCapProject.entities.concretes.IndividualCustomer;
+import com.etiya.ReCapProject.entities.concretes.Invoice;
 import com.etiya.ReCapProject.entities.concretes.Rental;
 import com.etiya.ReCapProject.entities.dto.RentalDetailDto;
 import com.etiya.ReCapProject.entities.requests.creditCardRequests.CreateCreditCardRequest;
@@ -42,11 +49,14 @@ public class RentalManager implements RentalService {
 	private IndividualCustomerService individualCustomerService;
 	private FindeksScoreService findeksScoreService;
 	private CreditCardService creditCardService;
+	private FakePosService fakePosService;
+	private AdditionalServiceService additionalServiceService;
 
 	@Autowired
 	public RentalManager(RentalDao rentalDao, CarService carService, UserService userService,
 			CorporateCustomerService corporateCustomerService, IndividualCustomerService individualCustomerService,
-			FindeksScoreService findeksScoreService, CreditCardService creditCardService) {
+			FindeksScoreService findeksScoreService, CreditCardService creditCardService,
+			FakePosService fakePosService, AdditionalServiceService additionalServiceService) {
 		super();
 		this.rentalDao = rentalDao;
 		this.carService = carService;
@@ -55,6 +65,8 @@ public class RentalManager implements RentalService {
 		this.individualCustomerService = individualCustomerService;
 		this.findeksScoreService = findeksScoreService;
 		this.creditCardService = creditCardService;
+		this.fakePosService = fakePosService;
+		this.additionalServiceService = additionalServiceService;
 	}
 
 	@Override
@@ -76,7 +88,9 @@ public class RentalManager implements RentalService {
 						this.carService.getById(createRentalRequest.getCarId()).getData().getCity()),
 				checkReturnCity(createRentalRequest.getReturnCity(),
 						this.carService.getById(createRentalRequest.getCarId()).getData().getCity(),
-						createRentalRequest.getCarId()));
+						createRentalRequest.getCarId()),
+				checkPosService(createCreditCardRequest.getNameOnCard(), createCreditCardRequest.getCreditCardNumber(),
+						createCreditCardRequest.getExpirationDate(), createCreditCardRequest.getCvc()));
 
 		if (result != null) {
 			return result;
@@ -89,10 +103,10 @@ public class RentalManager implements RentalService {
 	public Result update(UpdateRentalRequest updateRentalRequest) {
 		Car car = this.carService.getById(updateRentalRequest.getCarId()).getData();
 
-		if(updateRentalRequest.getReturnKm()>updateRentalRequest.getRentKm()) {
+		if (updateRentalRequest.getReturnKm() > updateRentalRequest.getRentKm()) {
 			car.setKm(updateRentalRequest.getReturnKm());
 		}
-		
+
 		ApplicationUser applicationUser = this.userService.getById(updateRentalRequest.getUserId()).getData();
 
 		Rental rental = rentalDao.getById(updateRentalRequest.getRentalId());
@@ -102,7 +116,8 @@ public class RentalManager implements RentalService {
 		rental.setReturnDate(updateRentalRequest.getReturnDate());
 
 		this.rentalDao.save(rental);
-		//this.getInvoiceIfCarIsReturned(rental.getRentalId(), updateRentalRequest.getReturnDate());
+		// this.getInvoiceIfCarIsReturned(rental.getRentalId(),
+		// updateRentalRequest.getReturnDate());
 		return new SuccessResult(Messages.RENTAL + Messages.UPDATE);
 	}
 
@@ -155,10 +170,10 @@ public class RentalManager implements RentalService {
 
 		Car car = this.carService.getById(createRentalRequest.getCarId()).getData();
 
-		if(createRentalRequest.getReturnKm()>createRentalRequest.getRentKm()) {
+		if (createRentalRequest.getReturnKm() > createRentalRequest.getRentKm()) {
 			car.setKm(createRentalRequest.getReturnKm());
 		}
-		
+
 		ApplicationUser user = new ApplicationUser();
 		user.setUserId(createRentalRequest.getUserId());
 
@@ -169,9 +184,12 @@ public class RentalManager implements RentalService {
 		rental.setReturnDate(createRentalRequest.getReturnDate());
 		rental.setRentCity(createRentalRequest.getRentCity());
 		rental.setReturnCity(createRentalRequest.getReturnCity());
+		rental.setReturned(createRentalRequest.isReturned());
 
 		this.rentalDao.save(rental);
-		//this.getInvoiceIfCarIsReturned(rentalCheck.getRentalId(), createRentalRequest.getReturnDate());
+		this.createInvoiceRequest(rental.getRentalId());
+		// this.getInvoiceIfCarIsReturned(rentalCheck.getRentalId(),
+		// createRentalRequest.getReturnDate());
 		return new SuccessResult(Messages.RENTAL + Messages.ADD);
 	}
 
@@ -214,21 +232,73 @@ public class RentalManager implements RentalService {
 	private Result checkReturnCity(String returnCity, String carCity, int carId) {
 		if (!returnCity.equals(carCity)) {
 			this.carService.getById(carId).getData().setCity(returnCity);
-			return new SuccessResult();
+			return new SuccessResult("true");
 		}
-		return new SuccessResult();
+		return new SuccessResult("false");
 	}
 
-//	private Result getInvoiceIfCarIsReturned(int rentalId, String returnDate) {
-//
-//		if (returnDate == null) {
-//			this.rentalDao.getById(rentalId).setReturned(true);
-//			return new SuccessResult();
-//			
-//		} else {
-//			this.rentalDao.getById(rentalId).setReturned(false);
-//			return new SuccessResult();
-//		}
-//	}
+	@Override
+	public DataResult<Invoice> createInvoiceRequest(int rentalId) {
+
+		Rental rental = this.rentalDao.getById(rentalId);
+
+		if (rental.isReturned() == true) {
+
+			Invoice invoice = new Invoice();
+
+			invoice.setRental(rental);
+
+			invoice.setAmount(invoiceAmountCalculation(
+					checkReturnCity(rental.getRentCity(), rental.getReturnCity(), rental.getCar().getCarId()).getMessage(),
+					this.rentalDao.getById(rentalId).getCar().getDailyPrice(),
+					this.calculateTotalRentalDay(this.rentalDao.getById(rentalId).getRentDate(),
+							this.rentalDao.getById(rentalId).getReturnDate()),
+					500));
+
+			String randomInvoiceNo = java.util.UUID.randomUUID().toString();
+			invoice.setInvoiceNo(randomInvoiceNo);
+
+			Date dateNow = new java.sql.Date(new java.util.Date().getTime());
+			invoice.setCreationDate(dateNow);
+
+			invoice.setRentalRentDate(this.rentalDao.getById(rentalId).getRentDate());
+			invoice.setRentalReturnDate(this.rentalDao.getById(rentalId).getReturnDate());
+			invoice.setTotalRentalDay(this.calculateTotalRentalDay(this.rentalDao.getById(rentalId).getRentDate(),
+					this.rentalDao.getById(rentalId).getReturnDate()));
+
+			return new SuccessDataResult<Invoice>(invoice, "Fatura talebi oluşturulmuştur");
+
+		} else {
+			return new SuccessDataResult<Invoice>();
+		}
+	}
+
+	private double invoiceAmountCalculation(String checkReturnCity, double carDailyPrice, long totalRentalDay,
+			int amountToRaisedIfReturnedAnotherCity) {
+		if (checkReturnCity.contains("true")) {
+			return carDailyPrice * totalRentalDay + amountToRaisedIfReturnedAnotherCity;
+		} else {
+			return carDailyPrice * totalRentalDay;
+		}
+	}
+
+	private long calculateTotalRentalDay(String rentDateString, String returnDateString) {
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy");
+
+		LocalDate rentDate = LocalDate.parse(rentDateString, formatter);
+		LocalDate returnDate = LocalDate.parse(returnDateString, formatter);
+
+		return ChronoUnit.DAYS.between(rentDate, returnDate);
+	}
+
+	private Result checkPosService(String nameOnCard, String creditCardNumber, String expirationDate, String cvc) {
+
+		if (this.fakePosService.fakePosService(nameOnCard, creditCardNumber, expirationDate, cvc)) {
+			return new SuccessResult();
+		} else {
+			return new ErrorResult("Ödeme alınamadı.");
+		}
+	}
 
 }

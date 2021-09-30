@@ -56,32 +56,7 @@ public class InvoiceManager implements InvoiceService {
 			return result;
 		}
 
-		Invoice invoice = new Invoice();
-
-		Rental rental = this.rentalService.getById(createInvoiceRequest.getRentalId()).getData();
-		invoice.setRental(rental);
-
-		invoice.setAmount(invoiceAmountCalculation(
-				this.rentalService.getById(createInvoiceRequest.getRentalId()).getData().getCar().getDailyPrice(),
-				this.calculateTotalRentalDay(
-						this.rentalService.getById(createInvoiceRequest.getRentalId()).getData().getRentDate(),
-						this.rentalService.getById(createInvoiceRequest.getRentalId()).getData().getReturnDate())));
-
-		String randomInvoiceNo = java.util.UUID.randomUUID().toString();
-		invoice.setInvoiceNo(randomInvoiceNo);
-
-		Date dateNow = new java.sql.Date(new java.util.Date().getTime());
-		invoice.setCreationDate(dateNow);
-
-		invoice.setRentalRentDate(
-				this.rentalService.getById(createInvoiceRequest.getRentalId()).getData().getRentDate());
-		invoice.setRentalReturnDate(
-				this.rentalService.getById(createInvoiceRequest.getRentalId()).getData().getReturnDate());
-		invoice.setTotalRentalDay(this.calculateTotalRentalDay(
-				this.rentalService.getById(createInvoiceRequest.getRentalId()).getData().getRentDate(),
-				this.rentalService.getById(createInvoiceRequest.getRentalId()).getData().getReturnDate()));
-
-		this.invoiceDao.save(invoice);
+		this.invoiceDao.save(this.rentalService.createInvoiceRequest(createInvoiceRequest.getRentalId()).getData());
 
 		return new SuccessResult(Messages.INVOICE + Messages.ADD);
 	}
@@ -149,13 +124,6 @@ public class InvoiceManager implements InvoiceService {
 		}
 		return new SuccessResult();
 	}
-	
-//	private Result checkIfCarIsReturned(int rentalId) {
-//		if (!this.rentalService.getById(rentalId).getData().isReturned()) {
-//			return new ErrorResult(Messages.CAR + Messages.NOTAVAILABLE);
-//		}
-//		return new SuccessResult();
-//	}
 
 	private long calculateTotalRentalDay(String rentDateString, String returnDateString) {
 

@@ -24,7 +24,8 @@ public class UpdateCreditCardRequest {
 	@NotNull(message = Messages.NOTNULL)
 	private String creditCardNumber;
 
-
+	private String nameOnCard;
+	
 	@NotNull(message = Messages.NOTNULL)
 	private String expirationDate;
 

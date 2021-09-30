@@ -37,4 +37,7 @@ public class UpdateRentalRequest {
 	private String rentCity;
 
 	private String returnCity;
+	
+	@NotNull(message = Messages.NOTNULL)
+	private boolean returned;
 }

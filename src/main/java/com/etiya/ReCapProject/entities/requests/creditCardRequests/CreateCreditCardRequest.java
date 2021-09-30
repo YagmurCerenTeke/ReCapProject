@@ -22,6 +22,8 @@ public class CreateCreditCardRequest {
 	@NotNull(message = Messages.NOTNULL)
 	private String cvc;
 
+	private String nameOnCard;
+	
 	@NotNull
 	private int userId;
 }

@@ -40,6 +40,9 @@ public class Rental {
 	@Column(name = "return_city")
 	private String returnCity;
 	
+	@Column(name = "is_returned")
+	private boolean returned;
+	
 	@ManyToOne
 	@JoinColumn(name = "car_id")
 	private Car car;

@@ -28,6 +28,9 @@ public class CreditCard {
 	@Column(name = "credit_card_id")
 	private int creditCardId;
 	
+	@Column(name = "name_on_card")
+	private String nameOnCard;
+	
 	@Column(name = "credit_card_number")
 	private String creditCardNumber;
 	
