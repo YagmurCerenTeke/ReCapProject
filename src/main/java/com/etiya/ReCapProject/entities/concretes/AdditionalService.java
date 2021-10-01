@@ -35,6 +35,4 @@ public class AdditionalService {
 	@Column(name = "price")
 	private int price;
 	
-	@Column(name = "selected")
-	private boolean selected;
 }

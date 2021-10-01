@@ -45,15 +45,14 @@ public class CarImageManager implements CarImageService {
 
 	@Override
 	public DataResult<List<CarImage>> getAll() {
-		return new SuccessDataResult<List<CarImage>>(this.carImageDao.findAll(),
-				Messages.CARIMAGES + Messages.LIST);
+		return new SuccessDataResult<List<CarImage>>(this.carImageDao.findAll(), Messages.CARIMAGES + Messages.LIST);
 	}
 
 	@Override
 	public DataResult<CarImage> getById(int carImageId) {
 		return new SuccessDataResult<CarImage>(this.carImageDao.getById(carImageId));
 	}
-	
+
 	@Override
 	public Result add(CreateCarImageRequest createCarImageRequest) {
 		var result = BusinessRules.run(checkCarImageCount(createCarImageRequest.getCarId(), 5),
@@ -66,14 +65,13 @@ public class CarImageManager implements CarImageService {
 		CarImage carImage = new CarImage();
 		carImage.setCar(carService.getById(createCarImageRequest.getCarId()).getData());
 
-		Date dateNow = new java.sql.Date(new java.util.Date().getTime());
-		carImage.setDate(dateNow);
+		carImage.setDate(this.getTodaysDate());
 
 		String imageRandomName = java.util.UUID.randomUUID().toString();
 		carImage.setImagePath("C:/Users/yagmur.teke/Desktop/Image/" + imageRandomName + ".jpg");
 
 		this.saveImage(createCarImageRequest.getImage(), carImage.getImagePath());
-		
+
 		this.carImageDao.save(carImage);
 		return new SuccessResult(Messages.CARIMAGE + Messages.ADD);
 	}
@@ -89,15 +87,11 @@ public class CarImageManager implements CarImageService {
 
 		CarImage carImage = carImageDao.getById(updateCarImageRequest.getCarImageId());
 		carImage.setCar(carService.getById(updateCarImageRequest.getCarId()).getData());
-
-		Date dateNow = new java.sql.Date(new java.util.Date().getTime());
-		carImage.setDate(dateNow);
-
-		String imageRandomName = java.util.UUID.randomUUID().toString();
-		carImage.setImagePath("C:/Users/yagmur.teke/Desktop/Image/" + imageRandomName + ".jpg");
+		carImage.setDate(this.getTodaysDate());
+		carImage.setImagePath("C:/Users/yagmur.teke/Desktop/Image/" + this.getRandomName() + ".jpg");
 
 		this.saveImage(updateCarImageRequest.getImage(), carImage.getImagePath());
-		
+
 		this.carImageDao.save(carImage);
 		return new SuccessResult(Messages.CARIMAGE + Messages.UPDATE);
 	}
@@ -105,7 +99,7 @@ public class CarImageManager implements CarImageService {
 	@Override
 	public Result delete(DeleteCarImageRequest deleteCarImageRequest) {
 		CarImage carImage = this.carImageDao.getById(deleteCarImageRequest.getCarImageId());
-		
+
 		this.carImageDao.delete(carImage);
 		return new SuccessResult(Messages.CARIMAGE + Messages.DELETE);
 	}
@@ -116,7 +110,8 @@ public class CarImageManager implements CarImageService {
 		int limit = carImageDao.countByCar_CarId(carId);
 
 		if (limit > 0) {
-			return new ErrorDataResult<List<CarImage>>(this.carImageDao.getByCar_CarId(carId), Messages.CARIMAGES + Messages.LIST);
+			return new ErrorDataResult<List<CarImage>>(this.carImageDao.getByCar_CarId(carId),
+					Messages.CARIMAGES + Messages.LIST);
 		}
 
 		List<CarImage> carImages = new ArrayList<CarImage>();
@@ -148,10 +143,10 @@ public class CarImageManager implements CarImageService {
 			}
 		}
 		return new ErrorResult(Messages.CARIMAGE + Messages.TYPEINVALID);
-	}	
-	
+	}
+
 	private void saveImage(MultipartFile image, String imagePath) {
-	
+
 		BufferedImage bufferedImage = null;
 		try {
 			bufferedImage = ImageIO.read(new ByteArrayInputStream(image.getBytes()));
@@ -165,5 +160,13 @@ public class CarImageManager implements CarImageService {
 			e.printStackTrace();
 		}
 	}
-	
+
+	private Date getTodaysDate() {
+		return new java.sql.Date(new java.util.Date().getTime());
+	}
+
+	private String getRandomName() {
+		return java.util.UUID.randomUUID().toString();
+
+	}
 }

@@ -78,6 +78,12 @@ public class UserManager implements UserService {
 
 	@Override
 	public Result update(UpdateApplicationUserRequest updateApplicationUserRequest) {
+		
+		
+//		AdditionalService additionalService = this.additionalServiceDao
+//				.getById(updateAdditionalServiceRequest.getAdditionalServiceId());
+//		additionalService.setAdditionalServiceName("");
+//		this.additionalServiceDao.save(additionalService);
 
 		ApplicationUser applicationUser = this.applicationUserDao.getById(updateApplicationUserRequest.getUserId());
 		applicationUser.setEmail(updateApplicationUserRequest.getEmail());

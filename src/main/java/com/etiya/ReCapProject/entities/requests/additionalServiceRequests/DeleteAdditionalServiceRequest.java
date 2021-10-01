@@ -1,6 +1,5 @@
 package com.etiya.ReCapProject.entities.requests.additionalServiceRequests;
 
-import com.etiya.ReCapProject.entities.requests.applicationUserRequests.CreateApplicationUserRequest;
 import com.sun.istack.NotNull;
 
 import lombok.AllArgsConstructor;

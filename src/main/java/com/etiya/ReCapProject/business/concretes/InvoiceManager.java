@@ -29,13 +29,12 @@ import com.etiya.ReCapProject.entities.requests.invoiceRequests.UpdateInvoiceReq
 public class InvoiceManager implements InvoiceService {
 
 	private InvoiceDao invoiceDao;
-	private RentalService rentalService;
 
 	@Autowired
-	public InvoiceManager(InvoiceDao invoiceDao, RentalService rentalService) {
+	public InvoiceManager(InvoiceDao invoiceDao) {
 		super();
 		this.invoiceDao = invoiceDao;
-		this.rentalService = rentalService;
+	
 	}
 
 	@Override
@@ -49,50 +48,50 @@ public class InvoiceManager implements InvoiceService {
 	}
 
 	@Override
-	public Result insert(CreateInvoiceRequest createInvoiceRequest) {
-		var result = BusinessRules.run(this.checkInvoiceByRentalId(createInvoiceRequest.getRentalId())/*, checkIfCarIsReturned(createInvoiceRequest.getRentalId())*/);
+	public Result insert(Invoice invoice) {
+		var result = BusinessRules.run(this.checkInvoiceByRentalId(invoice.getRental().getRentalId())/*, checkIfCarIsReturned(createInvoiceRequest.getRentalId())*/);
 
 		if (result != null) {
 			return result;
 		}
 
-		this.invoiceDao.save(this.rentalService.createInvoiceRequest(createInvoiceRequest.getRentalId()).getData());
-
+		this.invoiceDao.save(invoice);
+//this.rentalService.createInvoiceRequest(createInvoiceRequest.getAdditionalService(), createInvoiceRequest.getRentalId()).getData()
 		return new SuccessResult(Messages.INVOICE + Messages.ADD);
 	}
 
-	@Override
-	public Result update(UpdateInvoiceRequest updateInvoiceRequest) {
-
-		Invoice invoice = this.invoiceDao.getById(updateInvoiceRequest.getInvoiceId());
-
-		Rental rental = this.rentalService.getById(updateInvoiceRequest.getRentalId()).getData();
-		invoice.setRental(rental);
-
-		invoice.setAmount(invoiceAmountCalculation(
-				this.rentalService.getById(updateInvoiceRequest.getRentalId()).getData().getCar().getDailyPrice(),
-				this.calculateTotalRentalDay(
-						this.rentalService.getById(updateInvoiceRequest.getRentalId()).getData().getRentDate(),
-						this.rentalService.getById(updateInvoiceRequest.getRentalId()).getData().getReturnDate())));
-
-		String randomInvoiceNo = java.util.UUID.randomUUID().toString();
-		invoice.setInvoiceNo(randomInvoiceNo);
-
-		Date dateNow = new java.sql.Date(new java.util.Date().getTime());
-		invoice.setCreationDate(dateNow);
-
-		invoice.setRentalRentDate(
-				this.rentalService.getById(updateInvoiceRequest.getRentalId()).getData().getRentDate());
-		invoice.setRentalReturnDate(
-				this.rentalService.getById(updateInvoiceRequest.getRentalId()).getData().getReturnDate());
-		invoice.setTotalRentalDay(this.calculateTotalRentalDay(
-				this.rentalService.getById(updateInvoiceRequest.getRentalId()).getData().getRentDate(),
-				this.rentalService.getById(updateInvoiceRequest.getRentalId()).getData().getReturnDate()));
-
-		this.invoiceDao.save(invoice);
-
-		return new SuccessResult(Messages.INVOICE + Messages.UPDATE);
-	}
+//	@Override
+//	public Result update(UpdateInvoiceRequest updateInvoiceRequest) {
+//
+//		Invoice invoice = this.invoiceDao.getById(updateInvoiceRequest.getInvoiceId());
+//
+//		Rental rental = this.rentalService.getById(updateInvoiceRequest.getRentalId()).getData();
+//		invoice.setRental(rental);
+//
+//		invoice.setAmount(invoiceAmountCalculation(
+//				this.rentalService.getById(updateInvoiceRequest.getRentalId()).getData().getCar().getDailyPrice(),
+//				this.calculateTotalRentalDay(
+//						this.rentalService.getById(updateInvoiceRequest.getRentalId()).getData().getRentDate(),
+//						this.rentalService.getById(updateInvoiceRequest.getRentalId()).getData().getReturnDate())));
+//
+//		String randomInvoiceNo = java.util.UUID.randomUUID().toString();
+//		invoice.setInvoiceNo(randomInvoiceNo);
+//
+//		Date dateNow = new java.sql.Date(new java.util.Date().getTime());
+//		invoice.setCreationDate(dateNow);
+//
+//		invoice.setRentalRentDate(
+//				this.rentalService.getById(updateInvoiceRequest.getRentalId()).getData().getRentDate());
+//		invoice.setRentalReturnDate(
+//				this.rentalService.getById(updateInvoiceRequest.getRentalId()).getData().getReturnDate());
+//		invoice.setTotalRentalDay(this.calculateTotalRentalDay(
+//				this.rentalService.getById(updateInvoiceRequest.getRentalId()).getData().getRentDate(),
+//				this.rentalService.getById(updateInvoiceRequest.getRentalId()).getData().getReturnDate()));
+//
+//		this.invoiceDao.save(invoice);
+//
+//		return new SuccessResult(Messages.INVOICE + Messages.UPDATE);
+//	}
 
 	@Override
 	public Result delete(DeleteInvoiceRequest deleteInvoiceRequest) {
@@ -113,10 +112,10 @@ public class InvoiceManager implements InvoiceService {
 		return new SuccessDataResult<List<Invoice>>(this.invoiceDao.getByRental_ApplicationUser_UserId(userId),
 				Messages.INVOICES + Messages.LIST);
 	}
-
-	private double invoiceAmountCalculation(double carDailyPrice, long totalRentalDay) {
-		return carDailyPrice * totalRentalDay;
-	}
+//
+//	private double invoiceAmountCalculation(double carDailyPrice, long totalRentalDay) {
+//		return carDailyPrice * totalRentalDay;
+//	}
 
 	private Result checkInvoiceByRentalId(int rentalId) {
 		if (this.invoiceDao.existsByRental_RentalId(rentalId)) {
@@ -124,14 +123,14 @@ public class InvoiceManager implements InvoiceService {
 		}
 		return new SuccessResult();
 	}
-
-	private long calculateTotalRentalDay(String rentDateString, String returnDateString) {
-
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy");
-
-		LocalDate rentDate = LocalDate.parse(rentDateString, formatter);
-		LocalDate returnDate = LocalDate.parse(returnDateString, formatter);
-
-		return ChronoUnit.DAYS.between(rentDate, returnDate);
-	}
+//
+//	private long calculateTotalRentalDay(String rentDateString, String returnDateString) {
+//
+//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy");
+//
+//		LocalDate rentDate = LocalDate.parse(rentDateString, formatter);
+//		LocalDate returnDate = LocalDate.parse(returnDateString, formatter);
+//
+//		return ChronoUnit.DAYS.between(rentDate, returnDate);
+//	}
 }

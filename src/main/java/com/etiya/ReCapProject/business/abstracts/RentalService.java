@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.etiya.ReCapProject.core.utilities.results.DataResult;
 import com.etiya.ReCapProject.core.utilities.results.Result;
+import com.etiya.ReCapProject.entities.concretes.AdditionalService;
 import com.etiya.ReCapProject.entities.concretes.Invoice;
 import com.etiya.ReCapProject.entities.concretes.Rental;
 import com.etiya.ReCapProject.entities.requests.rentalRequests.DeleteRentalRequest;
@@ -25,5 +26,5 @@ public interface RentalService {
 	
 	Result getByCarIdWhereReturnDateIsNull(int carId);
 	
-	DataResult<Invoice> createInvoiceRequest(int rentalId);
+	DataResult<Invoice> createInvoiceRequest(List<Integer> additionalServices, int rentalId);
 }

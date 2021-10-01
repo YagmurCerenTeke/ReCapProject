@@ -47,14 +47,14 @@ public class InvoiceController {
 	
 	
 	@PostMapping("/insert")
-	public Result insert(@Valid @RequestBody CreateInvoiceRequest createInvoiceRequest) {
+	public Result insert(@Valid @RequestBody Invoice createInvoiceRequest) {
 		return this.invoiceService.insert(createInvoiceRequest);
 	}
 
-	@PostMapping("/update")
-	public Result update(@Valid @RequestBody UpdateInvoiceRequest updateInvoiceRequest) {
-		return this.invoiceService.update(updateInvoiceRequest);
-	}
+//	@PostMapping("/update")
+//	public Result update(@Valid @RequestBody UpdateInvoiceRequest updateInvoiceRequest) {
+//		return this.invoiceService.update(updateInvoiceRequest);
+//	}
 
 	@PostMapping("/delete")
 	public Result delete(@RequestBody DeleteInvoiceRequest deleteInvoiceRequest) {

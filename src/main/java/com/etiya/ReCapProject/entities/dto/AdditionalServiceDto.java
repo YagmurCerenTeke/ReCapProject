@@ -13,6 +13,4 @@ public class AdditionalServiceDto {
 	
 	private String additionalServiceName;
 
-	private boolean selected;
-
 }

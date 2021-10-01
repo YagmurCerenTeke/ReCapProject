@@ -14,8 +14,8 @@ public interface AdditionalServiceDao extends JpaRepository<AdditionalService, I
 	boolean existsByAdditionalServiceName(String name);
 	
 	@Query("Select new com.etiya.ReCapProject.entities.dto.AdditionalServiceDto"
-			+ "(a.additionalServiceId, a.additionalServiceName, selected) " 
-			+ 	"From AdditionalService a where selected = :selected")
-	DataResult<List<AdditionalServiceDto>> getAdditionalServiceRequests(boolean selected);
+			+ "(a.additionalServiceId, a.additionalServiceName) " 
+			+ 	"From AdditionalService a")
+	DataResult<List<AdditionalServiceDto>> getAdditionalServiceRequests();
 }
 

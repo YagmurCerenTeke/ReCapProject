@@ -43,7 +43,7 @@ public class RentalController {
 	}
 
 	@PostMapping("/add")
-	public Result add(@Valid CreateRentalRequest createRentalRequest, CreateCreditCardRequest createCreditCardRequest) {
+	public Result add(@Valid @RequestBody CreateRentalRequest createRentalRequest, CreateCreditCardRequest createCreditCardRequest) {
 		return this.rentalService.insert(createRentalRequest, createCreditCardRequest);
 	}
 

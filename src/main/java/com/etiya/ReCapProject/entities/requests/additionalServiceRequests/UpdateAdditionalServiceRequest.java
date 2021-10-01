@@ -4,7 +4,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import com.etiya.ReCapProject.business.constants.Messages;
-import com.etiya.ReCapProject.entities.requests.applicationUserRequests.CreateApplicationUserRequest;
 import com.sun.istack.NotNull;
 
 import lombok.AllArgsConstructor;
