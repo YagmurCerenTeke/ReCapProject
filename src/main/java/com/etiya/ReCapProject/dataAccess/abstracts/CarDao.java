@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.etiya.ReCapProject.entities.concretes.Car;
 import com.etiya.ReCapProject.entities.dto.CarDetailDto;
-import com.etiya.ReCapProject.entities.dto.CarDetailWithImagesDto;
 
 public interface CarDao extends JpaRepository<Car, Integer> {
 	
@@ -16,11 +15,11 @@ public interface CarDao extends JpaRepository<Car, Integer> {
 			+ 	"From Brand b Inner Join b.cars c Inner Join c.color cl ")
 	List<CarDetailDto> getCarsWithDetails();
 
-	@Query("Select new com.etiya.ReCapProject.entities.dto.CarDetailWithImagesDto"
-			+ "(c.id, c.carName, b.brandName, cl.colorName, c.dailyPrice, ci.imagePath) " 
-			+ 	"From Brand b Inner Join b.cars c Inner Join c.color cl Inner Join c.carImages ci"
-			+ " Where c.carId=:carId")
-	List<CarDetailWithImagesDto> getCarDetailsByCarId(int carId);
+//	@Query("Select new com.etiya.ReCapProject.entities.dto.CarDetailWithImagesDto"
+//			+ "(c.id, c.carName, b.brandName, cl.colorName, c.dailyPrice, ci.imagePath) " 
+//			+ 	"From Brand b Inner Join b.cars c Inner Join c.color cl Inner Join c.carImages ci"
+//			+ " Where c.carId=:carId")
+//	List<CarDetailWithImagesDto> getCarDetailsByCarId(int carId);
 	
 	List<Car> getByColor_ColorId(int colorId);
 

@@ -7,15 +7,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.etiya.ReCapProject.business.abstracts.CarImageService;
-import com.etiya.ReCapProject.business.abstracts.CarService;
 import com.etiya.ReCapProject.business.constants.Messages;
 import com.etiya.ReCapProject.core.utilities.business.BusinessRules;
 import com.etiya.ReCapProject.core.utilities.results.DataResult;
@@ -25,7 +26,9 @@ import com.etiya.ReCapProject.core.utilities.results.Result;
 import com.etiya.ReCapProject.core.utilities.results.SuccessDataResult;
 import com.etiya.ReCapProject.core.utilities.results.SuccessResult;
 import com.etiya.ReCapProject.dataAccess.abstracts.CarImageDao;
+import com.etiya.ReCapProject.entities.concretes.Car;
 import com.etiya.ReCapProject.entities.concretes.CarImage;
+import com.etiya.ReCapProject.entities.dto.CarImageDto;
 import com.etiya.ReCapProject.entities.requests.carImageRequests.CreateCarImageRequest;
 import com.etiya.ReCapProject.entities.requests.carImageRequests.DeleteCarImageRequest;
 import com.etiya.ReCapProject.entities.requests.carImageRequests.UpdateCarImageRequest;
@@ -34,18 +37,27 @@ import com.etiya.ReCapProject.entities.requests.carImageRequests.UpdateCarImageR
 public class CarImageManager implements CarImageService {
 
 	private CarImageDao carImageDao;
-	private CarService carService;
+	private ModelMapper modelMapper;
 
 	@Autowired
-	public CarImageManager(CarImageDao carImageDao, CarService carService) {
+	public CarImageManager(CarImageDao carImageDao, ModelMapper modelMapper) {
 		super();
 		this.carImageDao = carImageDao;
-		this.carService = carService;
+		this.modelMapper = modelMapper;
 	}
 
 	@Override
-	public DataResult<List<CarImage>> getAll() {
+	public DataResult<List<CarImage>> findAll() {
 		return new SuccessDataResult<List<CarImage>>(this.carImageDao.findAll(), Messages.CARIMAGES + Messages.LIST);
+	}
+
+	@Override
+	public DataResult<List<CarImageDto>> getAll() {
+
+		return new SuccessDataResult<List<CarImageDto>>(
+				this.carImageDao.findAll().stream()
+						.map(carImage -> modelMapper.map(carImage, CarImageDto.class)).collect(Collectors.toList()),
+				Messages.DAMAGES + Messages.LIST);
 	}
 
 	@Override
@@ -63,12 +75,11 @@ public class CarImageManager implements CarImageService {
 		}
 
 		CarImage carImage = new CarImage();
-		carImage.setCar(carService.getById(createCarImageRequest.getCarId()).getData());
-
+		Car car = new Car();
+		car.setCarId(createCarImageRequest.getCarId());
+		carImage.setCar(car);
 		carImage.setDate(this.getTodaysDate());
-
-		String imageRandomName = java.util.UUID.randomUUID().toString();
-		carImage.setImagePath("C:/Users/yagmur.teke/Desktop/Image/" + imageRandomName + ".jpg");
+		carImage.setImagePath("C:/Users/yagmur.teke/Desktop/Image/" + this.getRandomName() + ".jpg");
 
 		this.saveImage(createCarImageRequest.getImage(), carImage.getImagePath());
 
@@ -86,7 +97,9 @@ public class CarImageManager implements CarImageService {
 		}
 
 		CarImage carImage = carImageDao.getById(updateCarImageRequest.getCarImageId());
-		carImage.setCar(carService.getById(updateCarImageRequest.getCarId()).getData());
+		Car car = new Car();
+		car.setCarId(updateCarImageRequest.getCarId());
+		carImage.setCar(car);
 		carImage.setDate(this.getTodaysDate());
 		carImage.setImagePath("C:/Users/yagmur.teke/Desktop/Image/" + this.getRandomName() + ".jpg");
 
@@ -105,7 +118,7 @@ public class CarImageManager implements CarImageService {
 	}
 
 	@Override
-	public DataResult<List<CarImage>> getImagePathsByCarId(int carId) {
+	public DataResult<List<CarImage>> findImagePathsByCarId(int carId) {
 
 		int limit = carImageDao.countByCar_CarId(carId);
 
@@ -121,6 +134,29 @@ public class CarImageManager implements CarImageService {
 		carImages.add(carImage);
 
 		return new SuccessDataResult<List<CarImage>>(carImages, Messages.CARIMAGES + Messages.LIST);
+	}
+	
+	@Override
+	public DataResult<List<CarImageDto>> getImagePathsByCarId(int carId) {
+
+		int limit = carImageDao.countByCar_CarId(carId);
+
+		if (limit > 0) {
+			
+			List<CarImageDto> carImagesDto = this.carImageDao.getByCar_CarId(carId).stream().map(carImage -> 
+			modelMapper.map(carImage, CarImageDto.class)).collect(Collectors.toList());
+			
+			return new ErrorDataResult<List<CarImageDto>>(carImagesDto,
+					Messages.CARIMAGES + Messages.LIST);
+		}
+
+		List<CarImageDto> carImagesDto = new ArrayList<CarImageDto>();
+		CarImageDto carImageDto = new CarImageDto();
+		carImageDto.setImagePath("C:/Users/yagmur.teke/Desktop/Image/default.jpg");
+
+		carImagesDto.add(carImageDto);
+
+		return new SuccessDataResult<List<CarImageDto>>(carImagesDto, Messages.CARIMAGES + Messages.LIST);
 	}
 
 	private Result checkCarImageCount(int carId, long limit) {

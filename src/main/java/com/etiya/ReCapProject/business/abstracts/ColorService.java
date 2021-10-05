@@ -4,14 +4,20 @@ import java.util.List;
 
 import com.etiya.ReCapProject.core.utilities.results.*;
 import com.etiya.ReCapProject.entities.concretes.Color;
+import com.etiya.ReCapProject.entities.dto.ColorDto;
 import com.etiya.ReCapProject.entities.requests.colorRequests.UpdateColorRequest;
 import com.etiya.ReCapProject.entities.requests.colorRequests.CreateColorRequest;
 import com.etiya.ReCapProject.entities.requests.colorRequests.DeleteColorRequest;
 
 public interface ColorService {
-	DataResult<List<Color>> getAll();
+	
+	DataResult<List<Color>> findAll();
+	
+	DataResult<List<ColorDto>> getAll();
 
-	DataResult<Color> getById(int colorId);
+	DataResult<Color> findById(int colorId);
+	
+	DataResult<ColorDto> getById(int colorId);
 
 	Result add(CreateColorRequest createColorRequest);
 

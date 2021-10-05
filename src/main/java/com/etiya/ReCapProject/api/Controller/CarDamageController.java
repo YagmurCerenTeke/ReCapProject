@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.etiya.ReCapProject.business.abstracts.CarDamageService;
 import com.etiya.ReCapProject.core.utilities.results.DataResult;
 import com.etiya.ReCapProject.core.utilities.results.Result;
-import com.etiya.ReCapProject.entities.concretes.CarDamage;
+import com.etiya.ReCapProject.entities.dto.CarDamageDto;
 import com.etiya.ReCapProject.entities.requests.carDamageRequests.CreateCarDamageRequest;
 import com.etiya.ReCapProject.entities.requests.carDamageRequests.DeleteCarDamageRequest;
 import com.etiya.ReCapProject.entities.requests.carDamageRequests.UpdateCarDamageRequest;
@@ -34,12 +35,12 @@ public class CarDamageController {
 	}
 
 	@GetMapping("/getAll")
-	public DataResult<List<CarDamage>> getAll() {
+	public DataResult<List<CarDamageDto>> getAll() {
 		return this.carDamageService.getAll();
 	}
 	
-	@GetMapping("/getById")
-	public DataResult<List<CarDamage>> getByCarId(int carId) {
+	@GetMapping("/getByCarId")
+	public DataResult<List<CarDamageDto>> getByCarId(int carId) {
 		return this.carDamageService.getByCarId(carId);
 	}
 	
@@ -53,7 +54,7 @@ public class CarDamageController {
 		return this.carDamageService.update(updateCarDamageRequest);
 	}
 	
-	@PostMapping("/delete")
+	@DeleteMapping("/delete")
 	public Result delte(DeleteCarDamageRequest deleteCarDamageRequest) {
 		return this.carDamageService.delete(deleteCarDamageRequest);
 	}

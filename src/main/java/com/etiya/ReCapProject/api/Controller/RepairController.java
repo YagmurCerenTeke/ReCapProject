@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.etiya.ReCapProject.business.abstracts.RepairService;
 import com.etiya.ReCapProject.core.utilities.results.DataResult;
 import com.etiya.ReCapProject.core.utilities.results.Result;
-import com.etiya.ReCapProject.entities.concretes.Repair;
+import com.etiya.ReCapProject.entities.dto.RepairDto;
 import com.etiya.ReCapProject.entities.requests.repairRequest.DeleteRepairRequest;
 import com.etiya.ReCapProject.entities.requests.repairRequest.CreateRepairRequest;
 import com.etiya.ReCapProject.entities.requests.repairRequest.UpdateRepairRequest;
@@ -31,7 +32,7 @@ public class RepairController {
 	}
 
 	@GetMapping("/getAll")
-	public DataResult<List<Repair>> getAll(){
+	public DataResult<List<RepairDto>> getAll(){
 		return this.repairService.getAll(); 
 	}
 	
@@ -45,7 +46,7 @@ public class RepairController {
 		return this.repairService.update(updateRepairRequest); 
 	}
 
-	@PostMapping("/delete")
+	@DeleteMapping("/delete")
 	public Result delete(@RequestBody DeleteRepairRequest deleteRepairRequest){
 		return this.repairService.delete(deleteRepairRequest); 
 	}	

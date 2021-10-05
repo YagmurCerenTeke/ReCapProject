@@ -6,9 +6,7 @@ import java.util.List;
 import com.etiya.ReCapProject.core.utilities.results.DataResult;
 import com.etiya.ReCapProject.core.utilities.results.Result;
 import com.etiya.ReCapProject.entities.concretes.Invoice;
-import com.etiya.ReCapProject.entities.requests.invoiceRequests.CreateInvoiceRequest;
 import com.etiya.ReCapProject.entities.requests.invoiceRequests.DeleteInvoiceRequest;
-import com.etiya.ReCapProject.entities.requests.invoiceRequests.UpdateInvoiceRequest;
 
 public interface InvoiceService {
 

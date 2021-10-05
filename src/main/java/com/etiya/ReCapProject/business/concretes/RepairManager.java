@@ -1,7 +1,9 @@
 package com.etiya.ReCapProject.business.concretes;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,7 @@ import com.etiya.ReCapProject.core.utilities.results.SuccessDataResult;
 import com.etiya.ReCapProject.core.utilities.results.SuccessResult;
 import com.etiya.ReCapProject.dataAccess.abstracts.RepairDao;
 import com.etiya.ReCapProject.entities.concretes.Repair;
+import com.etiya.ReCapProject.entities.dto.RepairDto;
 import com.etiya.ReCapProject.entities.requests.repairRequest.DeleteRepairRequest;
 import com.etiya.ReCapProject.entities.requests.repairRequest.CreateRepairRequest;
 import com.etiya.ReCapProject.entities.requests.repairRequest.UpdateRepairRequest;
@@ -26,18 +29,35 @@ public class RepairManager implements RepairService {
 	private RepairDao repairDao;
 	private CarService carService;
 	private RentalService rentalService;
+	private ModelMapper modelMapper;
 
 	@Autowired
-	public RepairManager(RepairDao repairDao, CarService carService, RentalService rentalService) {
+	public RepairManager(RepairDao repairDao, CarService carService, RentalService rentalService, ModelMapper modelMapper) {
 		super();
 		this.repairDao = repairDao;
 		this.carService = carService;
 		this.rentalService = rentalService;
+		this.modelMapper = modelMapper;
 	}
 
 	@Override
-	public DataResult<List<Repair>> getAll() {
+	public DataResult<List<Repair>> findAll() {
 		return new SuccessDataResult<List<Repair>>(this.repairDao.findAll(), Messages.REPAIRS + Messages.LIST);
+	}
+
+	@Override
+	public DataResult<List<RepairDto>> getAll() {
+		List<Repair> repairs = this.repairDao.findAll();
+		List<RepairDto> repairsDto = new ArrayList<RepairDto>();
+		
+		for (Repair repair : repairs) {
+			RepairDto mappedRepairDto = modelMapper.map(repair, RepairDto.class);
+			mappedRepairDto.setCarId(repair.getCar().getCarId());
+			
+			repairsDto.add(mappedRepairDto);
+		}		
+
+		return new SuccessDataResult<List<RepairDto>>(repairsDto, Messages.REPAIRS + Messages.LIST);
 	}
 
 	@Override
@@ -49,10 +69,8 @@ public class RepairManager implements RepairService {
 			return result;
 		}
 
-		Repair repair = new Repair();
-		repair.setRepairStartDate(createRepairRequest.getRepairStartDate());
-		repair.setRepairFinishDate(createRepairRequest.getRepairFinishDate());
-		repair.setCar(this.carService.getById(createRepairRequest.getCarId()).getData());
+		Repair repair = modelMapper.map(createRepairRequest, Repair.class);
+		repair.setCar(this.carService.findById(createRepairRequest.getCarId()).getData());
 		this.setInRepairIfFinishDateIsNull(createRepairRequest.getCarId(), createRepairRequest.getRepairFinishDate());
 		this.repairDao.save(repair);
 		return new SuccessResult(Messages.REPAIR + Messages.ADD);
@@ -62,10 +80,8 @@ public class RepairManager implements RepairService {
 	@Override
 	public Result update(UpdateRepairRequest updateRepairRequest) {
 
-		Repair repair = this.repairDao.getById(updateRepairRequest.getRepairId());
-		repair.setCar(this.carService.getById(updateRepairRequest.getCarId()).getData());
-		repair.setRepairStartDate(updateRepairRequest.getRepairStartDate());
-		repair.setRepairFinishDate(updateRepairRequest.getRepairFinishDate());
+		Repair repair = modelMapper.map(updateRepairRequest, Repair.class);
+		repair.setCar(this.carService.findById(updateRepairRequest.getCarId()).getData());
 		this.setInRepairIfFinishDateIsNull(updateRepairRequest.getCarId(), updateRepairRequest.getRepairFinishDate());
 		this.repairDao.save(repair);
 		return new SuccessResult(Messages.REPAIR + Messages.UPDATE);
@@ -78,14 +94,13 @@ public class RepairManager implements RepairService {
 	}
 
 	private Result setInRepairIfFinishDateIsNull(int carId, String repairFinishDate) {
-		if (repairFinishDate.isBlank() || repairFinishDate.isEmpty()) {
-			this.carService.getById(carId).getData().setInRepair(false);
+		if (repairFinishDate == null) {
+			this.carService.findById(carId).getData().setInRepair(true);
 			return new SuccessResult();
 		} else {
-			this.carService.getById(carId).getData().setInRepair(false);
+			this.carService.findById(carId).getData().setInRepair(false);
 			return new SuccessResult();
 		}
 	}
 
-	
 }

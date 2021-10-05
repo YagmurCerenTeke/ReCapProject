@@ -1,7 +1,9 @@
 package com.etiya.ReCapProject.business.concretes;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +16,9 @@ import com.etiya.ReCapProject.core.utilities.results.Result;
 import com.etiya.ReCapProject.core.utilities.results.SuccessDataResult;
 import com.etiya.ReCapProject.core.utilities.results.SuccessResult;
 import com.etiya.ReCapProject.dataAccess.abstracts.CorporateCustomerDao;
-import com.etiya.ReCapProject.entities.concretes.ApplicationUser;
 import com.etiya.ReCapProject.entities.concretes.CorporateCustomer;
+
+import com.etiya.ReCapProject.entities.dto.CorporateCustomerDto;
 import com.etiya.ReCapProject.entities.requests.corporateCustomerRequests.CreateCorporateCustomerRequest;
 import com.etiya.ReCapProject.entities.requests.corporateCustomerRequests.DeleteCorporateCustomerRequest;
 import com.etiya.ReCapProject.entities.requests.corporateCustomerRequests.UpdateCorporateCustomerRequest;
@@ -25,37 +28,59 @@ public class CorporateCustomerManager implements CorporateCustomerService {
 
 	private CorporateCustomerDao corporateCustomerDao;
 	private UserService userService;
+	private ModelMapper modelMapper;
 
 	@Autowired
-	public CorporateCustomerManager(CorporateCustomerDao corporateCustomerDao, UserService userService) {
+	public CorporateCustomerManager(CorporateCustomerDao corporateCustomerDao, UserService userService, ModelMapper modelMapper) {
 		super();
 		this.corporateCustomerDao = corporateCustomerDao;
 		this.userService = userService;
+		this.modelMapper = modelMapper;
 	}
 
 	@Override
-	public DataResult<List<CorporateCustomer>> getAll() {
+	public DataResult<List<CorporateCustomer>> findAll() {
 		return new SuccessDataResult<List<CorporateCustomer>>(this.corporateCustomerDao.findAll(),
+				Messages.CORPORATE_CUSTOMERS + Messages.LIST);
+	}
+	
+	@Override
+	public DataResult<List<CorporateCustomerDto>> getAll() {
+		List<CorporateCustomer> corporateCustomers = this.corporateCustomerDao.findAll();
+		List<CorporateCustomerDto> corporateCustomersDto = new ArrayList<CorporateCustomerDto>();
+
+		for (CorporateCustomer corporateCustomer : corporateCustomers) {
+			CorporateCustomerDto mappedCorporateCustomer = modelMapper.map(corporateCustomer, CorporateCustomerDto.class);
+			mappedCorporateCustomer.setApplicationUserDto(this.userService.getById(corporateCustomer.getApplicationUser().getUserId()).getData());
+
+			corporateCustomersDto.add(mappedCorporateCustomer);
+		}
+		return new SuccessDataResult<List<CorporateCustomerDto>>(corporateCustomersDto,
 				Messages.CORPORATE_CUSTOMERS + Messages.LIST);
 	}
 
 	@Override
-	public DataResult<CorporateCustomer> getById(int corporateCustomerId) {
+	public DataResult<CorporateCustomer> findById(int corporateCustomerId) {
 		return new SuccessDataResult<CorporateCustomer>(this.corporateCustomerDao.getById(corporateCustomerId),
+				Messages.CORPORATE_CUSTOMER + Messages.LIST);
+	}
+
+	
+	@Override
+	public DataResult<CorporateCustomerDto> getById(int corporateCustomerId) {
+		CorporateCustomerDto mappedCorporateCustomer = modelMapper.map(this.corporateCustomerDao.getById(corporateCustomerId), CorporateCustomerDto.class);
+		mappedCorporateCustomer.setApplicationUserDto(this.userService.getById(corporateCustomerId).getData());	
+		
+		return new SuccessDataResult<CorporateCustomerDto>(mappedCorporateCustomer,
 				Messages.CORPORATE_CUSTOMER + Messages.LIST);
 	}
 
 	@Override
 	public Result add(CreateCorporateCustomerRequest createCorporateCustomerRequest) {
 		
-		ApplicationUser applicationUser = this.userService.getById(createCorporateCustomerRequest.getUserId())
-				.getData();
-
-		CorporateCustomer corporateCustomer = new CorporateCustomer();
-		corporateCustomer.setCompanyName(createCorporateCustomerRequest.getCompanyName());
-		corporateCustomer.setTaxNumber(createCorporateCustomerRequest.getTaxNumber());
-
-		corporateCustomer.setApplicationUser(applicationUser);
+		CorporateCustomer corporateCustomer = modelMapper.map(createCorporateCustomerRequest, CorporateCustomer.class);
+		corporateCustomer.setApplicationUser(this.userService.findById(createCorporateCustomerRequest.getUserId())
+				.getData());
 
 		this.corporateCustomerDao.save(corporateCustomer);
 		return new SuccessResult(Messages.CORPORATE_CUSTOMER + Messages.ADD);
@@ -64,14 +89,9 @@ public class CorporateCustomerManager implements CorporateCustomerService {
 	@Override
 	public Result update(UpdateCorporateCustomerRequest updateCorporateCustomerRequest) {
 		
-		ApplicationUser applicationUser = this.userService.getById(updateCorporateCustomerRequest.getUserId())
-				.getData();
-
-		CorporateCustomer corporateCustomer = new CorporateCustomer();
-		corporateCustomer.setCompanyName(updateCorporateCustomerRequest.getCompanyName());
-		corporateCustomer.setTaxNumber(updateCorporateCustomerRequest.getTaxNumber());
-
-		corporateCustomer.setApplicationUser(applicationUser);
+		CorporateCustomer corporateCustomer = modelMapper.map(updateCorporateCustomerRequest, CorporateCustomer.class);
+		corporateCustomer.setApplicationUser(this.userService.findById(updateCorporateCustomerRequest.getUserId())
+				.getData());
 
 		this.corporateCustomerDao.save(corporateCustomer);
 		return new SuccessResult(Messages.CORPORATE_CUSTOMER + Messages.UPDATE);

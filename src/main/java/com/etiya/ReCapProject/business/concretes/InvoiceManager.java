@@ -1,16 +1,12 @@
 package com.etiya.ReCapProject.business.concretes;
 
 import java.util.Date;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.etiya.ReCapProject.business.abstracts.InvoiceService;
-import com.etiya.ReCapProject.business.abstracts.RentalService;
 import com.etiya.ReCapProject.business.constants.Messages;
 import com.etiya.ReCapProject.core.utilities.business.BusinessRules;
 import com.etiya.ReCapProject.core.utilities.results.DataResult;
@@ -20,10 +16,7 @@ import com.etiya.ReCapProject.core.utilities.results.SuccessDataResult;
 import com.etiya.ReCapProject.core.utilities.results.SuccessResult;
 import com.etiya.ReCapProject.dataAccess.abstracts.InvoiceDao;
 import com.etiya.ReCapProject.entities.concretes.Invoice;
-import com.etiya.ReCapProject.entities.concretes.Rental;
-import com.etiya.ReCapProject.entities.requests.invoiceRequests.CreateInvoiceRequest;
 import com.etiya.ReCapProject.entities.requests.invoiceRequests.DeleteInvoiceRequest;
-import com.etiya.ReCapProject.entities.requests.invoiceRequests.UpdateInvoiceRequest;
 
 @Service
 public class InvoiceManager implements InvoiceService {

@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.etiya.ReCapProject.business.abstracts.AdditionalServiceService;
 import com.etiya.ReCapProject.core.utilities.results.DataResult;
 import com.etiya.ReCapProject.core.utilities.results.Result;
-import com.etiya.ReCapProject.entities.concretes.AdditionalService;
+import com.etiya.ReCapProject.entities.dto.AdditionalServiceDto;
 import com.etiya.ReCapProject.entities.requests.additionalServiceRequests.CreateAdditionalServiceRequest;
 import com.etiya.ReCapProject.entities.requests.additionalServiceRequests.DeleteAdditionalServiceRequest;
 import com.etiya.ReCapProject.entities.requests.additionalServiceRequests.UpdateAdditionalServiceRequest;
@@ -32,19 +33,14 @@ public class AdditionalServiceController {
 	}
 	
 	@GetMapping("/getAll")
-	public DataResult<List<AdditionalService>> getAll() {
+	public DataResult<List<AdditionalServiceDto>> getAll() {
 		return this.additionalServiceService.getAll();
 	}
 	
 	@GetMapping("/getById")
-	public DataResult<AdditionalService> getById(int additionalServiceId) {
+	public DataResult<AdditionalServiceDto> getById(int additionalServiceId) {
 		return this.additionalServiceService.getById(additionalServiceId);
 	}
-	
-//	@GetMapping("/getAdditionalServiceRequests")
-//	public DataResult<List<AdditionalServiceDto>> getAdditionalServiceRequests() {
-//		return this.additionalServiceService.getAdditionalServiceRequests();
-//	}
 	
 	@PostMapping("/add")
 	public Result add(@Valid @RequestBody CreateAdditionalServiceRequest createAdditionalServiceRequest) {
@@ -56,7 +52,7 @@ public class AdditionalServiceController {
 		return this.additionalServiceService.update(updateAdditionalServiceRequest);
 	}
 	
-	@PostMapping("/delete")
+	@DeleteMapping("/delete")
 	public Result delete(DeleteAdditionalServiceRequest deleteAdditionalServiceRequest) {
 		return this.additionalServiceService.delete(deleteAdditionalServiceRequest);
 	}

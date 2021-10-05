@@ -20,7 +20,7 @@ public class UpdateAdditionalServiceRequest {
 	
 	@NotBlank(message = Messages.NOTNULL)
 	@NotNull
-	private String name;
+	private String additionalServiceName;
 
 	@Size(max = 100)
 	@NotBlank(message = Messages.NOTNULL)

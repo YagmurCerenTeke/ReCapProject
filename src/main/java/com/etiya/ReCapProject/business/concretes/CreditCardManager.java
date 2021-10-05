@@ -65,7 +65,7 @@ public class CreditCardManager implements CreditCardService {
 		}
 		CreditCard creditCard = new CreditCard();
 		creditCard.setCreditCardNumber(createCreditCardRequest.getCreditCardNumber());
-		creditCard.setApplicationUser(this.userService.getById(createCreditCardRequest.getUserId()).getData());
+		creditCard.setApplicationUser(this.userService.findById(createCreditCardRequest.getUserId()).getData());
 		creditCard.setCvc(createCreditCardRequest.getCvc());
 		creditCard.setExpirationDate(createCreditCardRequest.getExpirationDate());
 		creditCard.setNameOnCard(createCreditCardRequest.getNameOnCard());
@@ -84,7 +84,7 @@ public class CreditCardManager implements CreditCardService {
 		}
 		CreditCard creditCard = creditCardDao.getById(updateCreditCardRequest.getCreditCardId());
 		creditCard.setCreditCardNumber(updateCreditCardRequest.getCreditCardNumber());
-		creditCard.setApplicationUser(this.userService.getById(updateCreditCardRequest.getUserId()).getData());
+		creditCard.setApplicationUser(this.userService.findById(updateCreditCardRequest.getUserId()).getData());
 		creditCard.setCvc(updateCreditCardRequest.getCvc());
 		creditCard.setExpirationDate(updateCreditCardRequest.getExpirationDate());
 		creditCard.setNameOnCard(updateCreditCardRequest.getNameOnCard());

@@ -9,6 +9,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,9 +20,7 @@ import com.etiya.ReCapProject.business.abstracts.InvoiceService;
 import com.etiya.ReCapProject.core.utilities.results.DataResult;
 import com.etiya.ReCapProject.core.utilities.results.Result;
 import com.etiya.ReCapProject.entities.concretes.Invoice;
-import com.etiya.ReCapProject.entities.requests.invoiceRequests.CreateInvoiceRequest;
 import com.etiya.ReCapProject.entities.requests.invoiceRequests.DeleteInvoiceRequest;
-import com.etiya.ReCapProject.entities.requests.invoiceRequests.UpdateInvoiceRequest;
 
 @RestController
 @RequestMapping("api/invoices")
@@ -56,7 +55,7 @@ public class InvoiceController {
 //		return this.invoiceService.update(updateInvoiceRequest);
 //	}
 
-	@PostMapping("/delete")
+	@DeleteMapping("/delete")
 	public Result delete(@RequestBody DeleteInvoiceRequest deleteInvoiceRequest) {
 		return this.invoiceService.delete(deleteInvoiceRequest);
 	}

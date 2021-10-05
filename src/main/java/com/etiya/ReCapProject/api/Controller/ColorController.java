@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.etiya.ReCapProject.business.abstracts.ColorService;
 import com.etiya.ReCapProject.core.utilities.results.*;
-import com.etiya.ReCapProject.entities.concretes.Color;
+import com.etiya.ReCapProject.entities.dto.ColorDto;
 import com.etiya.ReCapProject.entities.requests.colorRequests.UpdateColorRequest;
 import com.etiya.ReCapProject.entities.requests.colorRequests.CreateColorRequest;
 import com.etiya.ReCapProject.entities.requests.colorRequests.DeleteColorRequest;
@@ -30,12 +31,12 @@ public class ColorController {
 	}
 	
 	@GetMapping("/getAll")
-	public DataResult<List<Color>> getAll() {
+	public DataResult<List<ColorDto>> getAll() {
 		return this.colorService.getAll();
 	}
 	
 	@GetMapping("/getById")
-	public DataResult<Color> getById(int colorId) {
+	public DataResult<ColorDto> getById(int colorId) {
 		return this.colorService.getById(colorId);
 	}
 	
@@ -49,7 +50,7 @@ public class ColorController {
 		return this.colorService.update(updateColorRequest);
 	}
 	
-	@PostMapping("/delete")
+	@DeleteMapping("/delete")
 	public Result delte(DeleteColorRequest deleteColorRequest) {
 		return this.colorService.delete(deleteColorRequest);
 	}

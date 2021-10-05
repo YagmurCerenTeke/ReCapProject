@@ -106,13 +106,13 @@ public class RentalManager implements RentalService {
 
 	@Override
 	public Result update(UpdateRentalRequest updateRentalRequest) {
-		Car car = this.carService.getById(updateRentalRequest.getCarId()).getData();
+		Car car = this.carService.findById(updateRentalRequest.getCarId()).getData();
 
 		if (updateRentalRequest.getReturnKm() > updateRentalRequest.getRentKm()) {
 			car.setKm(updateRentalRequest.getReturnKm());
 		}
 
-		ApplicationUser applicationUser = this.userService.getById(updateRentalRequest.getUserId()).getData();
+		ApplicationUser applicationUser = this.userService.findById(updateRentalRequest.getUserId()).getData();
 
 		Rental rental = rentalDao.getById(updateRentalRequest.getRentalId());
 		rental.setCar(car);
@@ -180,7 +180,7 @@ public class RentalManager implements RentalService {
 
 	private Result insertRental(CreateRentalRequest createRentalRequest) {
 
-		Car car = this.carService.getById(createRentalRequest.getCarId()).getData();
+		Car car = this.carService.findById(createRentalRequest.getCarId()).getData();
 
 		if (createRentalRequest.getReturnKm() > createRentalRequest.getRentKm()) {
 			car.setKm(createRentalRequest.getReturnKm());
@@ -260,7 +260,7 @@ public class RentalManager implements RentalService {
 	private DataResult<Integer> additionalServiceCost(List<Integer> additionalServicesId) {
 		int totalCost = 0;
 //		this.additionalServiceService.getById(additionalServicesId.get(1));
-		List<AdditionalService> additionalServices = this.additionalServiceService.getAll().getData();
+		List<AdditionalService> additionalServices = this.additionalServiceService.findAll().getData();
 		for (int i = 0; i < additionalServicesId.size(); i++) {
 			for (AdditionalService additionalService : additionalServices) {
 				if (additionalService.getAdditionalServiceId() == this.additionalServiceService

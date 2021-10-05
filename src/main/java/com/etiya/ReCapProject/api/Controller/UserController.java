@@ -2,6 +2,7 @@ package com.etiya.ReCapProject.api.Controller;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.etiya.ReCapProject.business.abstracts.UserService;
 import com.etiya.ReCapProject.core.utilities.results.DataResult;
 import com.etiya.ReCapProject.core.utilities.results.Result;
-import com.etiya.ReCapProject.entities.concretes.ApplicationUser;
+import com.etiya.ReCapProject.entities.dto.ApplicationUserDto;
 import com.etiya.ReCapProject.entities.requests.applicationUserRequests.CreateApplicationUserRequest;
 import com.etiya.ReCapProject.entities.requests.applicationUserRequests.DeleteApplicationUserRequest;
 import com.etiya.ReCapProject.entities.requests.applicationUserRequests.UpdateApplicationUserRequest;
@@ -28,12 +29,12 @@ public class UserController {
 	}
 	
 	@GetMapping("/getAll")
-	public DataResult<List<ApplicationUser>> getAll(){
+	public DataResult<List<ApplicationUserDto>> getAll(){
 		return this.userService.getAll(); 
 	}
 	
 	@GetMapping("/getById")
-	public DataResult<ApplicationUser> getById(int userId){
+	public DataResult<ApplicationUserDto> getById(int userId){
 		return this.userService.getById(userId);
 	}
 		
@@ -47,7 +48,7 @@ public class UserController {
 		return this.userService.update(UpdateApplicationUserRequest); 
 	}
 
-	@PostMapping("/delete")
+	@DeleteMapping("/delete")
 	public Result delete(@RequestBody DeleteApplicationUserRequest deleteApplicationUserRequest){
 		return this.userService.delete(deleteApplicationUserRequest); 
 	}
