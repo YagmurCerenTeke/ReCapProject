@@ -130,6 +130,7 @@ public class UserManager implements UserService {
 		return new SuccessResult(this.applicationUserDao.getPasswordByEmail(email));
 	}
 
+
 	private Result checkIfEmailExists(String newEmail) {
 		List<String> emails = this.applicationUserDao.findAllEmail();
 		for (String email : emails) {

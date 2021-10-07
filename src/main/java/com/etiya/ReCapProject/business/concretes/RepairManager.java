@@ -9,9 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.etiya.ReCapProject.business.abstracts.RepairService;
 import com.etiya.ReCapProject.business.abstracts.CarService;
-import com.etiya.ReCapProject.business.abstracts.RentalService;
 import com.etiya.ReCapProject.business.constants.Messages;
-import com.etiya.ReCapProject.core.utilities.business.BusinessRules;
 import com.etiya.ReCapProject.core.utilities.results.DataResult;
 import com.etiya.ReCapProject.core.utilities.results.Result;
 import com.etiya.ReCapProject.core.utilities.results.SuccessDataResult;
@@ -28,15 +26,13 @@ public class RepairManager implements RepairService {
 
 	private RepairDao repairDao;
 	private CarService carService;
-	private RentalService rentalService;
 	private ModelMapper modelMapper;
 
 	@Autowired
-	public RepairManager(RepairDao repairDao, CarService carService, RentalService rentalService, ModelMapper modelMapper) {
+	public RepairManager(RepairDao repairDao, CarService carService, ModelMapper modelMapper) {
 		super();
 		this.repairDao = repairDao;
 		this.carService = carService;
-		this.rentalService = rentalService;
 		this.modelMapper = modelMapper;
 	}
 
@@ -61,12 +57,6 @@ public class RepairManager implements RepairService {
 
 	@Override
 	public Result insert(CreateRepairRequest createRepairRequest) {
-		var result = BusinessRules
-				.run(this.rentalService.getByCarIdWhereReturnDateIsNull(createRepairRequest.getCarId()));
-
-		if (result != null) {
-			return result;
-		}
 
 		Repair repair = modelMapper.map(createRepairRequest, Repair.class);
 

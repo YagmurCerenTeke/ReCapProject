@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RentalDetailDto {
-
-	private int carId;
 	
-	private String returnDate;
+	private boolean returned;
 }

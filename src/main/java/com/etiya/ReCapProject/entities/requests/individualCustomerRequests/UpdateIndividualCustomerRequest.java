@@ -2,6 +2,7 @@ package com.etiya.ReCapProject.entities.requests.individualCustomerRequests;
 
 import javax.validation.constraints.Size;
 
+import com.etiya.ReCapProject.entities.dto.ApplicationUserDto;
 import com.sun.istack.NotNull;
 
 import lombok.AllArgsConstructor;
@@ -27,5 +28,5 @@ public class UpdateIndividualCustomerRequest {
 	private String nationalIdentityNumber;
 	
 	@NotNull
-	private int userId;
+	private ApplicationUserDto applicationUser;
 }

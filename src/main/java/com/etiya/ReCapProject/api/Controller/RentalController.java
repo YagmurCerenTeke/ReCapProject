@@ -37,19 +37,24 @@ public class RentalController {
 	public DataResult<List<RentalDto>> getAll() {
 		return this.rentalService.getAll();
 	}
-
+	
 	@GetMapping("/getById")
 	public DataResult<RentalDto> getById(int rentalId) {
 		return this.rentalService.getById(rentalId);
 	}
 
+	@GetMapping("/existsByUserId")
+	public Result existsByUserId(int applicationUserId) {
+		return this.rentalService.existsByUserId(applicationUserId);
+	}
+	
 	@PostMapping("/add")
-	public Result add(@Valid @RequestBody CreateRentalRequest createRentalRequest, CreateCreditCardRequest createCreditCardRequest) {
+	public Result add(@Valid CreateCreditCardRequest createCreditCardRequest,@Valid @RequestBody CreateRentalRequest createRentalRequest) {
 		return this.rentalService.insert(createRentalRequest, createCreditCardRequest);
 	}
 
 	@PostMapping("/update")
-	public Result update(@Valid @RequestBody UpdateRentalRequest updateRentalRequest, CreateCreditCardRequest createCreditCardRequest) {
+	public Result update(@Valid @RequestBody CreateCreditCardRequest createCreditCardRequest, UpdateRentalRequest updateRentalRequest) {
 		return this.rentalService.update(updateRentalRequest, createCreditCardRequest);
 	}
 

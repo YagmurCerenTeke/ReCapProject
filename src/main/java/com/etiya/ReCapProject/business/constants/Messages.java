@@ -48,7 +48,8 @@ public class Messages {
 	public static final String TYPEINVALID = "türü uygun değildir.";
 	public static final String EMAILEXISTS = "Bu e-postaya tanımlı kullanıcı bulunmaktadır.";
 	public static final String NOTAVAILABLE = "kiradadır.";
-	public static final String INVOICEEXISTS ="Bu kiralamaya ait fatura vardır.";
+	public static final String INVOICEEXISTS = "Bu kiralamaya ait fatura vardır.";
+	public static final String PAYMENTFAILED = "Ödeme alınamadı.";
 	
 	// Confirmations
 	public static final String INDIVIDUALCUSTOMERREGISTER = "Bireysel müşteri kaydı başarıyla tamamlanmıştır.";
@@ -63,5 +64,7 @@ public class Messages {
 	public static final String FINDEKSSCORENOTENOUGH = "Findeks puanı yeterli değildir.";
 	public static final String CARINREPAIR = "Araba bakımdadır.";
 	public static final String CARINANOTHERCITY = "Araba başka şehirden kiralanamaz.";
-	public static final String InvoiceIsNotFoundByRental = "Bu kiralama işlemine ait fatura bulunmamaktadır";
+	public static final String INVOICENOTFOUNDBYRENTAL = "Bu kiralama işlemine ait fatura bulunmamaktadır";
+	public static final String INVOICEREQUESTCREATED = "Fatura talebi oluşturulmuştur";
+	public static final String CARINRENT = "Araba kiradadır.";
 }

@@ -4,6 +4,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import com.etiya.ReCapProject.business.constants.Messages;
+import com.etiya.ReCapProject.entities.dto.ApplicationUserDto;
 import com.sun.istack.NotNull;
 
 import lombok.AllArgsConstructor;
@@ -28,5 +29,5 @@ public class UpdateCorporateCustomerRequest {
 	private String taxNumber;
 
 	@NotNull
-	private int userId;
+	private ApplicationUserDto applicationUser;
 }

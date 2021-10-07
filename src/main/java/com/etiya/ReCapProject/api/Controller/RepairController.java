@@ -37,7 +37,7 @@ public class RepairController {
 	}
 	
 	@PostMapping("/insert")
-	public Result insert(@Valid CreateRepairRequest createRepairRequest){
+	public Result insert(@Valid @RequestBody CreateRepairRequest createRepairRequest){
 		return this.repairService.insert(createRepairRequest); 
 	}
 	

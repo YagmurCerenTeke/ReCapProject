@@ -38,7 +38,7 @@ public class AdditionalServiceManager implements AdditionalServiceService {
 	@Override
 	public DataResult<List<AdditionalService>> findAll() {
 		return new SuccessDataResult<List<AdditionalService>>(this.additionalServiceDao.findAll(),
-				Messages.BRANDS + Messages.LIST);
+				Messages.ADDITIONAL_SERVICES + Messages.LIST);
 	}
 
 	@Override
@@ -46,20 +46,20 @@ public class AdditionalServiceManager implements AdditionalServiceService {
 		return new SuccessDataResult<List<AdditionalServiceDto>>(
 				this.additionalServiceDao.findAll().stream().map(additionalService -> 
 				modelMapper.map(additionalService, AdditionalServiceDto.class)).collect(Collectors.toList()),
-				Messages.BRANDS + Messages.LIST);
+				Messages.ADDITIONAL_SERVICES + Messages.LIST);
 	}
 
 	@Override
 	public DataResult<AdditionalService> findById(int additionalServiceId) {
 		return new SuccessDataResult<AdditionalService>(this.additionalServiceDao.getById(additionalServiceId),
-				Messages.BRAND + Messages.LIST);
+				Messages.ADDITIONAL_SERVICE + Messages.LIST);
 	}
 
 	@Override
 	public DataResult<AdditionalServiceDto> getById(int additionalServiceId) {
 		return new SuccessDataResult<AdditionalServiceDto>(modelMapper.map(this.additionalServiceDao.
 				getById(additionalServiceId), AdditionalServiceDto.class),
-				Messages.BRAND + Messages.LIST);
+				Messages.ADDITIONAL_SERVICE + Messages.LIST);
 	}
 	
 //	@Override
@@ -79,7 +79,7 @@ public class AdditionalServiceManager implements AdditionalServiceService {
 
 		AdditionalService additionalService = modelMapper.map(createAdditionalServiceRequest, AdditionalService.class);
 		this.additionalServiceDao.save(additionalService);
-		return new SuccessResult(Messages.BRAND + Messages.ADD);
+		return new SuccessResult(Messages.ADDITIONAL_SERVICE + Messages.ADD);
 
 	}
 
@@ -100,7 +100,7 @@ public class AdditionalServiceManager implements AdditionalServiceService {
 		
 		additionalService = modelMapper.map(updateAdditionalServiceRequest, AdditionalService.class);
 		this.additionalServiceDao.save(additionalService);
-		return new SuccessResult(Messages.BRAND + Messages.UPDATE);
+		return new SuccessResult(Messages.ADDITIONAL_SERVICE + Messages.UPDATE);
 	}
 
 	@Override
@@ -109,7 +109,7 @@ public class AdditionalServiceManager implements AdditionalServiceService {
 				.getById(deleteAdditionalServiceRequest.getAdditionalServiceId());
 
 		this.additionalServiceDao.delete(additionalService);
-		return new SuccessResult(Messages.BRAND + Messages.DELETE);
+		return new SuccessResult(Messages.ADDITIONAL_SERVICE + Messages.DELETE);
 	}
 
 	private Result checkIfAdditionalServiceNameExists(String additionalServiceName) {

@@ -1,5 +1,8 @@
 package com.etiya.ReCapProject.business.concretes;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,6 +11,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.etiya.ReCapProject.business.abstracts.AdditionalServiceService;
+import com.etiya.ReCapProject.business.abstracts.CarService;
 import com.etiya.ReCapProject.business.abstracts.InvoiceService;
 import com.etiya.ReCapProject.business.constants.Messages;
 import com.etiya.ReCapProject.core.utilities.business.BusinessRules;
@@ -17,20 +22,28 @@ import com.etiya.ReCapProject.core.utilities.results.Result;
 import com.etiya.ReCapProject.core.utilities.results.SuccessDataResult;
 import com.etiya.ReCapProject.core.utilities.results.SuccessResult;
 import com.etiya.ReCapProject.dataAccess.abstracts.InvoiceDao;
+import com.etiya.ReCapProject.entities.concretes.AdditionalService;
 import com.etiya.ReCapProject.entities.concretes.Invoice;
+import com.etiya.ReCapProject.entities.concretes.Rental;
 import com.etiya.ReCapProject.entities.dto.InvoiceDto;
+import com.etiya.ReCapProject.entities.requests.invoiceRequests.CreateInvoiceRequest;
 import com.etiya.ReCapProject.entities.requests.invoiceRequests.DeleteInvoiceRequest;
 
 @Service
 public class InvoiceManager implements InvoiceService {
 
 	private InvoiceDao invoiceDao;
+	private CarService carService;
+	private AdditionalServiceService additionalServiceService;
 	private ModelMapper modelMapper;
 
 	@Autowired
-	public InvoiceManager(InvoiceDao invoiceDao, ModelMapper modelMapper) {
+	public InvoiceManager(InvoiceDao invoiceDao, CarService carService,
+			AdditionalServiceService additionalServiceService, ModelMapper modelMapper) {
 		super();
 		this.invoiceDao = invoiceDao;
+		this.carService = carService;
+		this.additionalServiceService = additionalServiceService;
 		this.modelMapper = modelMapper;
 	}
 
@@ -44,10 +57,10 @@ public class InvoiceManager implements InvoiceService {
 		List<Invoice> invoices = this.invoiceDao.findAll();
 		List<InvoiceDto> invoicesDto = invoices.stream().map(brand -> modelMapper.map(brand, InvoiceDto.class))
 				.collect(Collectors.toList());
-		
+
 		return new SuccessDataResult<List<InvoiceDto>>(invoicesDto, Messages.INVOICES + Messages.LIST);
 	}
-	
+
 	@Override
 	public DataResult<Invoice> findById(int invoiceId) {
 		return new SuccessDataResult<Invoice>(this.invoiceDao.getById(invoiceId), Messages.INVOICE + Messages.LIST);
@@ -55,21 +68,55 @@ public class InvoiceManager implements InvoiceService {
 
 	@Override
 	public DataResult<InvoiceDto> getById(int invoiceId) {
-		Invoice invoice =this.invoiceDao.getById(invoiceId);
-		
-		return new SuccessDataResult<InvoiceDto>(modelMapper.map(invoice, InvoiceDto.class), Messages.INVOICE + Messages.LIST);
+		Invoice invoice = this.invoiceDao.getById(invoiceId);
+
+		return new SuccessDataResult<InvoiceDto>(modelMapper.map(invoice, InvoiceDto.class),
+				Messages.INVOICE + Messages.LIST);
 	}
 
 	@Override
-	public Result insert(Invoice invoice) {
-		var result = BusinessRules.run(this.checkInvoiceByRentalId(invoice.getRental().getRentalId())/*, checkIfCarIsReturned(createInvoiceRequest.getRentalId())*/);
+	public DataResult<List<InvoiceDto>> findInvoicesBetween(Date endDate, Date startDate) {
+		List<Invoice> invoices = this.invoiceDao.findAllByCreationDateBetween(endDate, startDate);
+		List<InvoiceDto> invoicesDto = invoices.stream().map(invoice -> modelMapper.map(invoice, InvoiceDto.class))
+				.collect(Collectors.toList());
+
+		return new SuccessDataResult<List<InvoiceDto>>(invoicesDto, Messages.INVOICES + Messages.LIST);
+	}
+
+	@Override
+	public DataResult<List<InvoiceDto>> getByRental_ApplicationUser_UserId(int userId) {
+		List<Invoice> invoices = this.invoiceDao.getByRental_ApplicationUser_UserId(userId);
+		List<InvoiceDto> invoicesDto = invoices.stream().map(invoice -> modelMapper.map(invoice, InvoiceDto.class))
+				.collect(Collectors.toList());
+
+		return new SuccessDataResult<List<InvoiceDto>>(invoicesDto, Messages.INVOICES + Messages.LIST);
+	}
+
+	@Override
+	public Result insert(CreateInvoiceRequest createInvoiceRequest, List<Integer> additionalServices) {
+		var result = BusinessRules.run(this.checkInvoiceByRentalId(createInvoiceRequest.getRental()
+				.getRentalId()));
 
 		if (result != null) {
 			return result;
 		}
 
+		Invoice invoice = modelMapper.map(createInvoiceRequest, Invoice.class);
+
+		invoice.setAmount(invoiceAmountCalculation(additionalServices,
+				createInvoiceRequest, 500));
+
+		invoice.setInvoiceNo(java.util.UUID.randomUUID().toString());
+
+		Date dateNow = new java.sql.Date(new java.util.Date().getTime());
+		invoice.setCreationDate(dateNow);
+
+		invoice.setRentDate(createInvoiceRequest.getRental().getRentDate());
+		invoice.setReturnDate(createInvoiceRequest.getRental().getReturnDate());
+		invoice.setTotalRentalDay(this.calculateTotalRentalDay(createInvoiceRequest));
+
 		this.invoiceDao.save(invoice);
-//this.rentalService.createInvoiceRequest(createInvoiceRequest.getAdditionalService(), createInvoiceRequest.getRentalId()).getData()
+
 		return new SuccessResult(Messages.INVOICE + Messages.ADD);
 	}
 
@@ -114,44 +161,62 @@ public class InvoiceManager implements InvoiceService {
 		return new SuccessResult(Messages.INVOICE + Messages.DELETE);
 	}
 
-	@Override
-	public DataResult<List<InvoiceDto>> findInvoicesBetween(Date endDate, Date startDate) {
-		List<Invoice> invoices = this.invoiceDao.findAllByCreationDateBetween(endDate, startDate);
-		List<InvoiceDto> invoicesDto = invoices.stream().map(brand -> modelMapper.map(brand, InvoiceDto.class))
-				.collect(Collectors.toList());
-		
-		return new SuccessDataResult<List<InvoiceDto>>(invoicesDto,
-				Messages.INVOICES + Messages.LIST);
-	}
-
-	@Override
-	public DataResult<List<InvoiceDto>> getByRental_ApplicationUser_UserId(int userId) {
-		List<Invoice> invoices = this.invoiceDao.getByRental_ApplicationUser_UserId(userId);
-		List<InvoiceDto> invoicesDto = invoices.stream().map(brand -> modelMapper.map(brand, InvoiceDto.class))
-				.collect(Collectors.toList());
-		
-		return new SuccessDataResult<List<InvoiceDto>>(invoicesDto,
-				Messages.INVOICES + Messages.LIST);
-	}
-//
-//	private double invoiceAmountCalculation(double carDailyPrice, long totalRentalDay) {
-//		return carDailyPrice * totalRentalDay;
-//	}
-
 	private Result checkInvoiceByRentalId(int rentalId) {
 		if (this.invoiceDao.existsByRental_RentalId(rentalId)) {
 			return new ErrorResult(Messages.INVOICEEXISTS);
 		}
 		return new SuccessResult();
 	}
-//
-//	private long calculateTotalRentalDay(String rentDateString, String returnDateString) {
-//
-//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy");
-//
-//		LocalDate rentDate = LocalDate.parse(rentDateString, formatter);
-//		LocalDate returnDate = LocalDate.parse(returnDateString, formatter);
-//
-//		return ChronoUnit.DAYS.between(rentDate, returnDate);
-//	}
+
+	private double invoiceAmountCalculation(List<Integer> additionalServices, CreateInvoiceRequest createInvoiceRequest,
+			int amountToRaisedIfReturnedAnotherCity) {
+		double carDailyPrice = this.carService.getById(createInvoiceRequest.getRental().getCar().getCarId()).getData()
+				.getDailyPrice();
+		long totalRentalDay = this.calculateTotalRentalDay(createInvoiceRequest);
+
+		if (this.checkReturnCity(createInvoiceRequest.getRental()).getMessage().contains("true")) {
+
+			return carDailyPrice * totalRentalDay + amountToRaisedIfReturnedAnotherCity
+					+ this.additionalServiceCost(additionalServices).getData();
+		} else {
+			return carDailyPrice * totalRentalDay + this.additionalServiceCost(additionalServices).getData();
+		}
+	}
+
+	private long calculateTotalRentalDay(CreateInvoiceRequest createInvoiceRequest) {
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy");
+
+		LocalDate rentDate = LocalDate.parse(createInvoiceRequest.getRental().getRentDate(), formatter);
+		LocalDate returnDate = LocalDate.parse(createInvoiceRequest.getRental().getReturnDate(), formatter);
+
+		return ChronoUnit.DAYS.between(rentDate, returnDate);
+	}
+
+	private DataResult<Integer> additionalServiceCost(List<Integer> additionalServicesId) {
+		int totalCost = 0;
+
+		List<AdditionalService> additionalServices = this.additionalServiceService.findAll().getData();
+		for (int i = 0; i < additionalServicesId.size(); i++) {
+			for (AdditionalService additionalService : additionalServices) {
+				if (additionalService.getAdditionalServiceId() == this.additionalServiceService
+						.getById(additionalServicesId.get(i)).getData().getAdditionalServiceId()) {
+					totalCost = totalCost + additionalService.getPrice();
+				}
+			}
+		}
+
+		return new SuccessDataResult<Integer>(totalCost);
+	}
+
+	private Result checkReturnCity(Rental rental) {
+		String returnCity = rental.getReturnCity();
+		String rentCity = rental.getRentCity();
+
+		if (!returnCity.equals(rentCity)) {
+			return new SuccessResult("true");
+		}
+		return new SuccessResult("false");
+	}
+
 }

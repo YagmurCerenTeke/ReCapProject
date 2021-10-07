@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
-import com.etiya.ReCapProject.entities.concretes.AdditionalService;
+import com.etiya.ReCapProject.entities.concretes.Rental;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class CreateInvoiceRequest {
 
 	@NotNull
-    private int rentalId;
+    private Rental rental;
 
-	private List<AdditionalService> additionalService;
+	private List<Integer> additionalService;
 }

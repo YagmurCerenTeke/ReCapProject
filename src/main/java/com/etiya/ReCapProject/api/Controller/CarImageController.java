@@ -51,9 +51,10 @@ public class CarImageController {
 	}
 
 	@PostMapping("/update")
-	public Result update(@RequestParam("carImageId") int carImageId, @RequestParam("file")  MultipartFile file) {
+	public Result update(@RequestParam("carId") int carId, @RequestParam("carImageId") int carImageId, @RequestParam("file")  MultipartFile file) {
 
 		UpdateCarImageRequest updateCarImageRequest = new UpdateCarImageRequest();
+		updateCarImageRequest.setCarId(carId);
 		updateCarImageRequest.setCarImageId(carImageId);
 		updateCarImageRequest.setImage(file);
 

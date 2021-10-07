@@ -7,6 +7,7 @@ import com.etiya.ReCapProject.core.utilities.results.DataResult;
 import com.etiya.ReCapProject.core.utilities.results.Result;
 import com.etiya.ReCapProject.entities.concretes.Invoice;
 import com.etiya.ReCapProject.entities.dto.InvoiceDto;
+import com.etiya.ReCapProject.entities.requests.invoiceRequests.CreateInvoiceRequest;
 import com.etiya.ReCapProject.entities.requests.invoiceRequests.DeleteInvoiceRequest;
 
 public interface InvoiceService {
@@ -19,7 +20,7 @@ public interface InvoiceService {
 
 	DataResult<InvoiceDto> getById(int invoiceId);
 	
-	Result insert(Invoice invoice);
+	Result insert(CreateInvoiceRequest createInvoiceRequest, List<Integer> additionalServices);
 
 	//Result update(UpdateInvoiceRequest updateInvoiceRequest);
 

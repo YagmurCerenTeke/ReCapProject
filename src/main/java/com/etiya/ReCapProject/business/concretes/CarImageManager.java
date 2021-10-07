@@ -57,7 +57,7 @@ public class CarImageManager implements CarImageService {
 		return new SuccessDataResult<List<CarImageDto>>(
 				this.carImageDao.findAll().stream()
 						.map(carImage -> modelMapper.map(carImage, CarImageDto.class)).collect(Collectors.toList()),
-				Messages.DAMAGES + Messages.LIST);
+				Messages.CARIMAGES + Messages.LIST);
 	}
 
 	@Override
