@@ -1,5 +1,7 @@
 package com.etiya.ReCapProject.entities.requests.rentalRequests;
 
+import java.util.List;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -21,7 +23,7 @@ public class UpdateRentalRequest {
 	private int carId;
 	
 	@NotNull(message = Messages.NOTNULL)
-	private int userId;
+	private int applicationUserUserUserId;
 	
 	@NotNull(message = Messages.NOTNULL)
 	private String rentDate;
@@ -39,5 +41,10 @@ public class UpdateRentalRequest {
 	private String returnCity;
 	
 	@NotNull(message = Messages.NOTNULL)
+	private boolean saveCreditCard;
+	
+	@NotNull(message = Messages.NOTNULL)
 	private boolean returned;
+	
+	private List<Integer> additionalService;
 }

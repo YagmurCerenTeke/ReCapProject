@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CarDamageDto {
 
-	private int carDamageId;
+	private int damageId;
 	
 	private String damageDetail;
 	

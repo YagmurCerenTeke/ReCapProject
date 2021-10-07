@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.etiya.ReCapProject.business.constants.Messages;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +17,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreateCarRequest {
 
+	@JsonIgnore
+	private String carId;
+	
 	@NotBlank(message = Messages.NOTNULL)
 	@NotNull
 	private String carName;

@@ -7,11 +7,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.etiya.ReCapProject.business.abstracts.BrandService;
-import com.etiya.ReCapProject.business.abstracts.CarDamageService;
-import com.etiya.ReCapProject.business.abstracts.CarImageService;
 import com.etiya.ReCapProject.business.abstracts.CarService;
-import com.etiya.ReCapProject.business.abstracts.ColorService;
 import com.etiya.ReCapProject.business.constants.Messages;
 import com.etiya.ReCapProject.core.utilities.results.DataResult;
 import com.etiya.ReCapProject.core.utilities.results.Result;
@@ -29,21 +25,12 @@ import com.etiya.ReCapProject.entities.requests.carRequests.UpdateCarRequest;
 public class CarManager implements CarService {
 
 	private CarDao carDao;
-	private ColorService colorService;
-	private BrandService brandService;
-	private CarImageService carImageService;
-	private CarDamageService carDamageService;
 	private ModelMapper modelMapper;
 
 	@Autowired
-	public CarManager(CarDao carDao, ColorService colorService, BrandService brandService,
-			CarDamageService carDamageService, CarImageService carImageService, ModelMapper modelMapper) {
+	public CarManager(CarDao carDao, ModelMapper modelMapper) {
 		super();
 		this.carDao = carDao;
-		this.colorService = colorService;
-		this.brandService = brandService;
-		this.carImageService = carImageService;
-		this.carDamageService = carDamageService;
 		this.modelMapper = modelMapper;
 	}
 
@@ -109,7 +96,8 @@ public class CarManager implements CarService {
 
 	@Override
 	public DataResult<List<CarDto>> getAllAvailableCars() {
-		return new SuccessDataResult<List<CarDto>>(this.mappedCarList(this.carDao.findByInRepairFalse()), Messages.CARS + Messages.LIST);
+		return new SuccessDataResult<List<CarDto>>(this.mappedCarList(this.carDao.findByInRepairFalse()),
+				Messages.CARS + Messages.LIST);
 	}
 
 	@Override
@@ -118,16 +106,9 @@ public class CarManager implements CarService {
 				Messages.CARS + Messages.LIST);
 	}
 
-	
-
-	
-	
-	
 	@Override
 	public Result add(CreateCarRequest createCarRequest) {
 		Car car = modelMapper.map(createCarRequest, Car.class);
-		car.setBrand(this.brandService.findById(createCarRequest.getBrandId()).getData());
-		car.setColor(this.colorService.findById(createCarRequest.getColorId()).getData());
 
 		this.carDao.save(car);
 		return new SuccessResult(Messages.CAR + Messages.ADD);
@@ -136,8 +117,6 @@ public class CarManager implements CarService {
 	@Override
 	public Result update(UpdateCarRequest updateCarRequest) {
 		Car car = modelMapper.map(updateCarRequest, Car.class);
-		car.setBrand(this.brandService.findById(updateCarRequest.getBrandId()).getData());
-		car.setColor(this.colorService.findById(updateCarRequest.getColorId()).getData());
 
 		this.carDao.save(car);
 		return new SuccessResult(Messages.CAR + Messages.UPDATE);
@@ -158,10 +137,6 @@ public class CarManager implements CarService {
 
 		for (Car car : cars) {
 			CarDto mappedCar = modelMapper.map(car, CarDto.class);
-			mappedCar.setBrandDto(this.brandService.getById(car.getBrand().getBrandId()).getData());
-			mappedCar.setCarDamageDto(this.carDamageService.getByCarId(car.getCarId()).getData());
-			mappedCar.setCarImageDto(this.carImageService.getImagePathsByCarId(car.getCarId()).getData());
-			mappedCar.setColorDto(this.colorService.getById(car.getColor().getColorId()).getData());
 
 			carsDto.add(mappedCar);
 		}
@@ -170,15 +145,11 @@ public class CarManager implements CarService {
 
 	private CarDto mappedCar(Car car) {
 		CarDto mappedCar = modelMapper.map(car, CarDto.class);
-		mappedCar.setBrandDto(this.brandService.getById(car.getBrand().getBrandId()).getData());
-		mappedCar.setCarDamageDto(this.carDamageService.getByCarId(car.getCarId()).getData());
-		mappedCar.setCarImageDto(this.carImageService.getImagePathsByCarId(car.getCarId()).getData());
-		mappedCar.setColorDto(this.colorService.getById(car.getColor().getColorId()).getData());
+
 		return mappedCar;
 	}
 
 }
-
 
 //@Override
 //public DataResult<List<CarDetailWithImagesDto>> getCarDetailsByCarId(int carId) {

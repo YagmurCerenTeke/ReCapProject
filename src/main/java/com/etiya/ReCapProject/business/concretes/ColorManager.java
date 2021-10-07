@@ -35,7 +35,7 @@ public class ColorManager implements ColorService {
 	public DataResult<List<Color>> findAll() {
 		return new SuccessDataResult<List<Color>>(this.colorDao.findAll(), Messages.COLORS + Messages.LIST);
 	}
-	
+
 	@Override
 	public DataResult<List<ColorDto>> getAll() {
 		List<Color> colors = this.colorDao.findAll();
@@ -49,7 +49,7 @@ public class ColorManager implements ColorService {
 	public DataResult<Color> findById(int colorId) {
 		return new SuccessDataResult<Color>(this.colorDao.getById(colorId), Messages.COLOR + Messages.LIST);
 	}
-	
+
 	@Override
 	public DataResult<ColorDto> getById(int colorId) {
 		Color color = this.colorDao.getById(colorId);

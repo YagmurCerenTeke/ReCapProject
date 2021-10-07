@@ -5,17 +5,24 @@ import java.util.List;
 import com.etiya.ReCapProject.core.utilities.results.DataResult;
 import com.etiya.ReCapProject.core.utilities.results.Result;
 import com.etiya.ReCapProject.entities.concretes.CreditCard;
+import com.etiya.ReCapProject.entities.dto.CreditCardDto;
 import com.etiya.ReCapProject.entities.requests.creditCardRequests.CreateCreditCardRequest;
 import com.etiya.ReCapProject.entities.requests.creditCardRequests.DeleteCreditCardRequest;
 import com.etiya.ReCapProject.entities.requests.creditCardRequests.UpdateCreditCardRequest;
 
 public interface CreditCardService {
 	
-	DataResult<List<CreditCard>> getAll();
+	DataResult<List<CreditCard>> findAll();
 
-	DataResult<CreditCard> getById(int cardInformationId); 
+	DataResult<List<CreditCardDto>> getAll();
+
+	DataResult<CreditCard> findById(int cardInformationId); 
+
+	DataResult<CreditCardDto> getById(int cardInformationId); 
 	
-	DataResult<List<CreditCard>> getCreditCardsByApplicationUser_UserId(int applicationUserId);
+	DataResult<List<CreditCard>> findCreditCardsByApplicationUser_UserId(int applicationUserId);
+
+	DataResult<List<CreditCardDto>> getCreditCardsByApplicationUser_UserId(int applicationUserId);
 
 	Result add(CreateCreditCardRequest createCreditCardRequest);
 

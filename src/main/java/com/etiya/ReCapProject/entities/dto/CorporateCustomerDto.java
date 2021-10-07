@@ -15,5 +15,5 @@ public class CorporateCustomerDto {
 	
 	private String taxNumber;
 	
-	private ApplicationUserDto applicationUserDto;
+	private ApplicationUserDto applicationUser;
 }

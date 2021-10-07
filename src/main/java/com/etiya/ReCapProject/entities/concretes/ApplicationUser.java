@@ -2,6 +2,7 @@ package com.etiya.ReCapProject.entities.concretes;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -25,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "users")
 public class ApplicationUser extends User {
 
-	@OneToOne(mappedBy = "applicationUser")
+	@OneToOne(mappedBy = "applicationUser", cascade = CascadeType.ALL)
 	private IndividualCustomer individualCustomer;
 	
 	@OneToOne(mappedBy = "applicationUser")

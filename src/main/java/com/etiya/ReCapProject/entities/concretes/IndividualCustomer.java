@@ -1,6 +1,5 @@
 package com.etiya.ReCapProject.entities.concretes;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,8 +9,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","rentals"})
+//@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","rentals"})
 @Table(name = "individual_customers")
 public class IndividualCustomer {
 	
@@ -36,9 +33,9 @@ public class IndividualCustomer {
 	private String lastName;
 	
 	@Column(name = "identity_number")
-	private String identityNumber;
+	private String nationalIdentityNumber;
 	
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne()
 	@JoinColumn(name = "user_id")
 	private ApplicationUser applicationUser;
 	

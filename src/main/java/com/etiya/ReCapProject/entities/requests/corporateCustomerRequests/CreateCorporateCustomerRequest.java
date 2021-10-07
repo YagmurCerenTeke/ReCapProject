@@ -4,6 +4,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import com.etiya.ReCapProject.business.constants.Messages;
+import com.etiya.ReCapProject.entities.dto.ApplicationUserDto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 
 import lombok.AllArgsConstructor;
@@ -15,6 +17,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreateCorporateCustomerRequest {
 
+	@JsonIgnore
+	private int corporateCustomerId;
+	
 	@NotBlank(message = Messages.NOTNULL)
 	@NotNull
 	private String companyName;
@@ -25,5 +30,5 @@ public class CreateCorporateCustomerRequest {
 	private String taxNumber;
 
 	@NotNull
-	private int userId;
+	private ApplicationUserDto applicationUser;
 }

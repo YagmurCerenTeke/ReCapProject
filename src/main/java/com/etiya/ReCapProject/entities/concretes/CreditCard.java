@@ -40,7 +40,7 @@ public class CreditCard {
 	@Column(name = "cvc")
 	private String cvc;
 
-	@ManyToOne()
+	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private ApplicationUser applicationUser;
 

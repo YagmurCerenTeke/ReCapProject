@@ -29,12 +29,12 @@ public class CarDto {
 	
 	private boolean inRepair;
 
-	private BrandDto brandDto;
+	private String brandName;
 
-	private ColorDto colorDto;
+	private String colorName;
 	
-	private List<CarImageDto> carImageDto;
+	private List<CarImageDto> carImages;
 	
-	private List<CarDamageDto> carDamageDto;
+	private List<CarDamageDto> carDamages;
 	
 }

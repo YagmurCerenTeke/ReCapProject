@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.etiya.ReCapProject.business.abstracts.RentalService;
 import com.etiya.ReCapProject.core.utilities.results.DataResult;
 import com.etiya.ReCapProject.core.utilities.results.Result;
-import com.etiya.ReCapProject.entities.concretes.Rental;
+import com.etiya.ReCapProject.entities.dto.RentalDto;
 import com.etiya.ReCapProject.entities.requests.rentalRequests.DeleteRentalRequest;
 import com.etiya.ReCapProject.entities.requests.creditCardRequests.CreateCreditCardRequest;
 import com.etiya.ReCapProject.entities.requests.rentalRequests.CreateRentalRequest;
@@ -34,12 +34,12 @@ public class RentalController {
 	}
 
 	@GetMapping("/getAll")
-	public DataResult<List<Rental>> getAll() {
+	public DataResult<List<RentalDto>> getAll() {
 		return this.rentalService.getAll();
 	}
 
 	@GetMapping("/getById")
-	public DataResult<Rental> getById(int rentalId) {
+	public DataResult<RentalDto> getById(int rentalId) {
 		return this.rentalService.getById(rentalId);
 	}
 
@@ -49,8 +49,8 @@ public class RentalController {
 	}
 
 	@PostMapping("/update")
-	public Result update(@Valid @RequestBody UpdateRentalRequest updateRentalRequest) {
-		return this.rentalService.update(updateRentalRequest);
+	public Result update(@Valid @RequestBody UpdateRentalRequest updateRentalRequest, CreateCreditCardRequest createCreditCardRequest) {
+		return this.rentalService.update(updateRentalRequest, createCreditCardRequest);
 	}
 
 	@DeleteMapping("/delete")

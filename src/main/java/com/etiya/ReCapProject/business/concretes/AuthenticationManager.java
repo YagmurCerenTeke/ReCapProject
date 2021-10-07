@@ -2,6 +2,7 @@ package com.etiya.ReCapProject.business.concretes;
 
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import com.etiya.ReCapProject.core.utilities.results.Result;
 import com.etiya.ReCapProject.core.utilities.results.SuccessDataResult;
 import com.etiya.ReCapProject.core.utilities.results.SuccessResult;
 import com.etiya.ReCapProject.entities.concretes.ApplicationUser;
+import com.etiya.ReCapProject.entities.dto.ApplicationUserDto;
 import com.etiya.ReCapProject.entities.requests.authenticationRequests.CreateCorporateCustomerRegisterRequest;
 import com.etiya.ReCapProject.entities.requests.authenticationRequests.CreateIndividualCustomerRegisterRequest;
 import com.etiya.ReCapProject.entities.requests.authenticationRequests.CreateLoginRequest;
@@ -29,14 +31,16 @@ public class AuthenticationManager implements AuthenticationService {
 	private UserService userService;
 	private IndividualCustomerService individualCustomerService;
 	private CorporateCustomerService corporateCustomerService;
+	private ModelMapper modelMapper;
 
 	@Autowired
 	public AuthenticationManager(UserService userService, IndividualCustomerService individualCustomerService,
-			CorporateCustomerService corporateCustomerService) {
+			CorporateCustomerService corporateCustomerService, ModelMapper modelMapper) {
 		super();
 		this.userService = userService;
 		this.individualCustomerService = individualCustomerService;
 		this.corporateCustomerService = corporateCustomerService;
+		this.modelMapper = modelMapper;
 	}
 
 	@Override
@@ -50,13 +54,12 @@ public class AuthenticationManager implements AuthenticationService {
 			return result;
 		}
 
-		CreateIndividualCustomerRequest individualCustomerRequest = new CreateIndividualCustomerRequest();
-		individualCustomerRequest.setFirstName(createIndividualCustomerRegisterRequest.getFirstName());
-		individualCustomerRequest.setLastName(createIndividualCustomerRegisterRequest.getLastName());
-		individualCustomerRequest
-				.setNationalIdentityNumber(createIndividualCustomerRegisterRequest.getNationalIdentityNumber());
-		individualCustomerRequest.setUserId(this.createUser(createIndividualCustomerRegisterRequest.getEmail(),
-				createIndividualCustomerRegisterRequest.getPassword()).getData().getUserId());
+		CreateIndividualCustomerRequest individualCustomerRequest = modelMapper.map(createIndividualCustomerRegisterRequest, CreateIndividualCustomerRequest.class);
+
+		ApplicationUser appUser = this.createUser(createIndividualCustomerRegisterRequest.getEmail(),
+				createIndividualCustomerRegisterRequest.getPassword()).getData();
+		
+		individualCustomerRequest.setApplicationUser(modelMapper.map(appUser, ApplicationUserDto.class));
 		this.individualCustomerService.add(individualCustomerRequest);
 
 		return new SuccessResult(Messages.INDIVIDUALCUSTOMERREGISTER);
@@ -71,13 +74,12 @@ public class AuthenticationManager implements AuthenticationService {
 			return result;
 		}
 
-		CreateCorporateCustomerRequest corporateCustomerRequest = new CreateCorporateCustomerRequest();
-		corporateCustomerRequest.setCompanyName(createCorporateCustomerRequest.getCompanyName());
-		corporateCustomerRequest.setTaxNumber(createCorporateCustomerRequest.getTaxNumber());
-		corporateCustomerRequest.setUserId(
-				this.createUser(createCorporateCustomerRequest.getEmail(), createCorporateCustomerRequest.getPassword())
-						.getData().getUserId());
+		CreateCorporateCustomerRequest corporateCustomerRequest = modelMapper.map(createCorporateCustomerRequest, CreateCorporateCustomerRequest.class);
 
+		ApplicationUser appUser = this.createUser(createCorporateCustomerRequest.getEmail(),
+				createCorporateCustomerRequest.getPassword()).getData();
+		
+		corporateCustomerRequest.setApplicationUser(modelMapper.map(appUser, ApplicationUserDto.class));
 		this.corporateCustomerService.add(corporateCustomerRequest);
 
 		return new SuccessResult(Messages.CORPORATECUSTOMERREGISTER);

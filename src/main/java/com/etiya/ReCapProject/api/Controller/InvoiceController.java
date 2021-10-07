@@ -20,6 +20,7 @@ import com.etiya.ReCapProject.business.abstracts.InvoiceService;
 import com.etiya.ReCapProject.core.utilities.results.DataResult;
 import com.etiya.ReCapProject.core.utilities.results.Result;
 import com.etiya.ReCapProject.entities.concretes.Invoice;
+import com.etiya.ReCapProject.entities.dto.InvoiceDto;
 import com.etiya.ReCapProject.entities.requests.invoiceRequests.DeleteInvoiceRequest;
 
 @RestController
@@ -35,12 +36,12 @@ public class InvoiceController {
 	}
 
 	@GetMapping("/getAll")
-	public DataResult<List<Invoice>> getAll() {
+	public DataResult<List<InvoiceDto>> getAll() {
 		return this.invoiceService.getAll();
 	}
 	
 	@GetMapping("/getById")
-	public DataResult<Invoice> getById(int invoiceId) {
+	public DataResult<InvoiceDto> getById(int invoiceId) {
 		return this.invoiceService.getById(invoiceId);
 	}
 	
@@ -61,13 +62,13 @@ public class InvoiceController {
 	}
 
 	@GetMapping("/getInvoicesByUserId")
-	public DataResult<List<Invoice>> getInvoicesByUserId(int userId) {
+	public DataResult<List<InvoiceDto>> getInvoicesByUserId(int userId) {
 
 		return this.invoiceService.getByRental_ApplicationUser_UserId(userId);
 	}
 
 	@GetMapping("/findInvoicesBetween")
-	public DataResult<List<Invoice>> findInvoicesBetween(String endDate, String startDate) throws ParseException {
+	public DataResult<List<InvoiceDto>> findInvoicesBetween(String endDate, String startDate) throws ParseException {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Date end = dateFormat.parse(endDate);
 		Date start = dateFormat.parse(startDate);

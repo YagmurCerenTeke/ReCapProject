@@ -17,5 +17,5 @@ public class IndividualCustomerDto {
 	
 	private String identityNumber;
 	
-	private ApplicationUserDto applicationUserDto;
+	private ApplicationUserDto applicationUser;
 }

@@ -38,10 +38,10 @@ public class Invoice {
 	private Date creationDate;
 
 	@Column(name = "rental_rent_date")
-	private String rentalRentDate;
+	private String rentDate;
 
 	@Column(name = "rental_return_date")
-	private String rentalReturnDate;
+	private String returnDate;
 
 	@Column(name = "total_rental_day")
 	private long totalRentalDay;

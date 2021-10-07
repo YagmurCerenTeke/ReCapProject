@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.etiya.ReCapProject.business.abstracts.IndividualCustomerService;
-import com.etiya.ReCapProject.business.abstracts.UserService;
 import com.etiya.ReCapProject.business.constants.Messages;
 import com.etiya.ReCapProject.core.utilities.results.DataResult;
 import com.etiya.ReCapProject.core.utilities.results.ErrorResult;
@@ -26,14 +25,12 @@ import com.etiya.ReCapProject.entities.requests.individualCustomerRequests.Updat
 public class IndividualCustomerManager implements IndividualCustomerService {
 
 	private IndividualCustomerDao individualCustomerDao;
-	private UserService userService;
 	private ModelMapper modelMapper;
 
 	@Autowired
-	public IndividualCustomerManager(IndividualCustomerDao individualCustomerDao, UserService userService, ModelMapper modelMapper) {
+	public IndividualCustomerManager(IndividualCustomerDao individualCustomerDao, ModelMapper modelMapper) {
 		super();
 		this.individualCustomerDao = individualCustomerDao;
-		this.userService = userService;
 		this.modelMapper = modelMapper;
 	}
 
@@ -49,26 +46,26 @@ public class IndividualCustomerManager implements IndividualCustomerService {
 		List<IndividualCustomerDto> individualCustomersDto = new ArrayList<IndividualCustomerDto>();
 
 		for (IndividualCustomer individualCustomer : individualCustomers) {
-			IndividualCustomerDto mappedIndividualCustomer = modelMapper.map(individualCustomer, IndividualCustomerDto.class);
-			mappedIndividualCustomer.setApplicationUserDto(this.userService.getById(individualCustomer.getApplicationUser().getUserId()).getData());
+			IndividualCustomerDto mappedIndividualCustomer = modelMapper.map(individualCustomer,
+					IndividualCustomerDto.class);
 
 			individualCustomersDto.add(mappedIndividualCustomer);
 		}
 		return new SuccessDataResult<List<IndividualCustomerDto>>(individualCustomersDto,
 				Messages.INDIVIDUALCUSTOMERS + Messages.LIST);
 	}
-	
+
 	@Override
 	public DataResult<IndividualCustomer> findById(int individualCustomerId) {
 		return new SuccessDataResult<IndividualCustomer>(this.individualCustomerDao.getById(individualCustomerId),
 				Messages.INDIVIDUALCUSTOMER + Messages.LIST);
 	}
-	
+
 	@Override
 	public DataResult<IndividualCustomerDto> getById(int individualCustomerId) {
-		IndividualCustomerDto mappedIndividualCustomer = modelMapper.map(this.individualCustomerDao.getById(individualCustomerId), IndividualCustomerDto.class);
-		mappedIndividualCustomer.setApplicationUserDto(this.userService.getById(individualCustomerId).getData());	
-		
+		IndividualCustomerDto mappedIndividualCustomer = modelMapper
+				.map(this.individualCustomerDao.getById(individualCustomerId), IndividualCustomerDto.class);
+
 		return new SuccessDataResult<IndividualCustomerDto>(mappedIndividualCustomer,
 				Messages.INDIVIDUALCUSTOMER + Messages.LIST);
 	}
@@ -76,9 +73,8 @@ public class IndividualCustomerManager implements IndividualCustomerService {
 	@Override
 	public Result add(CreateIndividualCustomerRequest createIndividualCustomerRequest) {
 
-		IndividualCustomer individualCustomer = modelMapper.map(createIndividualCustomerRequest, IndividualCustomer.class);
-		individualCustomer.setApplicationUser(this.userService.findById(createIndividualCustomerRequest.getUserId())
-				.getData());
+		IndividualCustomer individualCustomer = modelMapper.map(createIndividualCustomerRequest,
+				IndividualCustomer.class);
 
 		this.individualCustomerDao.save(individualCustomer);
 		return new SuccessResult(Messages.INDIVIDUALCUSTOMER + Messages.ADD);
@@ -86,10 +82,9 @@ public class IndividualCustomerManager implements IndividualCustomerService {
 
 	@Override
 	public Result update(UpdateIndividualCustomerRequest updateIndividualCustomerRequest) {
-		
-		IndividualCustomer individualCustomer = modelMapper.map(updateIndividualCustomerRequest, IndividualCustomer.class);
-		individualCustomer.setApplicationUser(this.userService.findById(updateIndividualCustomerRequest.getUserId())
-				.getData());
+
+		IndividualCustomer individualCustomer = modelMapper.map(updateIndividualCustomerRequest,
+				IndividualCustomer.class);
 
 		this.individualCustomerDao.save(individualCustomer);
 		return new SuccessResult(Messages.INDIVIDUALCUSTOMER + Messages.UPDATE);
@@ -112,7 +107,7 @@ public class IndividualCustomerManager implements IndividualCustomerService {
 		}
 		return new ErrorResult();
 	}
-	
+
 	@Override
 	public DataResult<IndividualCustomer> getByApplicationUser_UserId(int applicationUserId) {
 		return new SuccessDataResult<IndividualCustomer>(

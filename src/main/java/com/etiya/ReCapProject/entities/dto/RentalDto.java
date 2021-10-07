@@ -23,6 +23,6 @@ public class RentalDto {
 	
 	private int carId;
 
-	private ApplicationUserDto applicationUserDto;
+	private ApplicationUserDto applicationUser;
 
 }

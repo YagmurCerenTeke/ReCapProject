@@ -52,7 +52,6 @@ public class RepairManager implements RepairService {
 		
 		for (Repair repair : repairs) {
 			RepairDto mappedRepairDto = modelMapper.map(repair, RepairDto.class);
-			mappedRepairDto.setCarId(repair.getCar().getCarId());
 			
 			repairsDto.add(mappedRepairDto);
 		}		
@@ -70,7 +69,7 @@ public class RepairManager implements RepairService {
 		}
 
 		Repair repair = modelMapper.map(createRepairRequest, Repair.class);
-		repair.setCar(this.carService.findById(createRepairRequest.getCarId()).getData());
+
 		this.setInRepairIfFinishDateIsNull(createRepairRequest.getCarId(), createRepairRequest.getRepairFinishDate());
 		this.repairDao.save(repair);
 		return new SuccessResult(Messages.REPAIR + Messages.ADD);
@@ -81,7 +80,7 @@ public class RepairManager implements RepairService {
 	public Result update(UpdateRepairRequest updateRepairRequest) {
 
 		Repair repair = modelMapper.map(updateRepairRequest, Repair.class);
-		repair.setCar(this.carService.findById(updateRepairRequest.getCarId()).getData());
+
 		this.setInRepairIfFinishDateIsNull(updateRepairRequest.getCarId(), updateRepairRequest.getRepairFinishDate());
 		this.repairDao.save(repair);
 		return new SuccessResult(Messages.REPAIR + Messages.UPDATE);

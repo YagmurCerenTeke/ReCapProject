@@ -6,13 +6,18 @@ import java.util.List;
 import com.etiya.ReCapProject.core.utilities.results.DataResult;
 import com.etiya.ReCapProject.core.utilities.results.Result;
 import com.etiya.ReCapProject.entities.concretes.Invoice;
+import com.etiya.ReCapProject.entities.dto.InvoiceDto;
 import com.etiya.ReCapProject.entities.requests.invoiceRequests.DeleteInvoiceRequest;
 
 public interface InvoiceService {
 
-	DataResult<List<Invoice>> getAll();
+	DataResult<List<Invoice>> findAll();
 	
-	DataResult<Invoice> getById(int invoiceId);
+	DataResult<List<InvoiceDto>> getAll();
+	
+	DataResult<Invoice> findById(int invoiceId);
+
+	DataResult<InvoiceDto> getById(int invoiceId);
 	
 	Result insert(Invoice invoice);
 
@@ -20,7 +25,7 @@ public interface InvoiceService {
 
 	Result delete(DeleteInvoiceRequest deleteInvoiceRequest);
 	
-	DataResult<List<Invoice>> findInvoicesBetween(Date endDate, Date startDate);
+	DataResult<List<InvoiceDto>> findInvoicesBetween(Date endDate, Date startDate);
 
-	DataResult<List<Invoice>> getByRental_ApplicationUser_UserId(int userId);
+	DataResult<List<InvoiceDto>> getByRental_ApplicationUser_UserId(int userId);
 }

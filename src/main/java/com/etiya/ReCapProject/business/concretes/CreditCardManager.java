@@ -3,12 +3,13 @@ package com.etiya.ReCapProject.business.concretes;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.etiya.ReCapProject.business.abstracts.CreditCardService;
-import com.etiya.ReCapProject.business.abstracts.UserService;
 import com.etiya.ReCapProject.business.constants.Messages;
 import com.etiya.ReCapProject.core.utilities.business.BusinessRules;
 import com.etiya.ReCapProject.core.utilities.results.DataResult;
@@ -18,6 +19,7 @@ import com.etiya.ReCapProject.core.utilities.results.SuccessDataResult;
 import com.etiya.ReCapProject.core.utilities.results.SuccessResult;
 import com.etiya.ReCapProject.dataAccess.abstracts.CreditCardDao;
 import com.etiya.ReCapProject.entities.concretes.CreditCard;
+import com.etiya.ReCapProject.entities.dto.CreditCardDto;
 import com.etiya.ReCapProject.entities.requests.creditCardRequests.CreateCreditCardRequest;
 import com.etiya.ReCapProject.entities.requests.creditCardRequests.DeleteCreditCardRequest;
 import com.etiya.ReCapProject.entities.requests.creditCardRequests.UpdateCreditCardRequest;
@@ -26,32 +28,58 @@ import com.etiya.ReCapProject.entities.requests.creditCardRequests.UpdateCreditC
 public class CreditCardManager implements CreditCardService {
 
 	private CreditCardDao creditCardDao;
-	private UserService userService;
+	private ModelMapper modelMapper;
 
 	@Autowired
-	public CreditCardManager(CreditCardDao creditCardDao, UserService userService) {
+	public CreditCardManager(CreditCardDao creditCardDao, ModelMapper modelMapper) {
 		super();
 		this.creditCardDao = creditCardDao;
-		this.userService = userService;
+		this.modelMapper = modelMapper;
 	}
 
 	@Override
-	public DataResult<List<CreditCard>> getAll() {
+	public DataResult<List<CreditCard>> findAll() {
 		return new SuccessDataResult<List<CreditCard>>(this.creditCardDao.findAll(),
 				Messages.CREDITCARDS + Messages.LIST);
 	}
 
 	@Override
-	public DataResult<CreditCard> getById(int creditCardId) {
+	public DataResult<List<CreditCardDto>> getAll() {
+		List<CreditCard> creditCards = this.creditCardDao.findAll();
+		List<CreditCardDto> creditCardsDto = creditCards.stream().map(creditCard -> modelMapper.map(creditCard, CreditCardDto.class))
+				.collect(Collectors.toList());
+		return new SuccessDataResult<List<CreditCardDto>>(creditCardsDto,
+				Messages.CREDITCARDS + Messages.LIST);
+	}
+
+	@Override
+	public DataResult<CreditCard> findById(int creditCardId) {
 		return new SuccessDataResult<CreditCard>(this.creditCardDao.getById(creditCardId),
 				Messages.CREDITCARD + Messages.LIST);
 	}
 
 	@Override
-	public DataResult<List<CreditCard>> getCreditCardsByApplicationUser_UserId(int applicationUserId) {
+	public DataResult<CreditCardDto> getById(int creditCardId) {
+		CreditCard creditCard = this.creditCardDao.getById(creditCardId);
+		return new SuccessDataResult<CreditCardDto>(modelMapper.map(creditCard, CreditCardDto.class),
+				Messages.CREDITCARD + Messages.LIST);
+	}
+
+	@Override
+	public DataResult<List<CreditCard>> findCreditCardsByApplicationUser_UserId(int applicationUserId) {
 		return new SuccessDataResult<List<CreditCard>>(
 				this.creditCardDao.getCreditCardByApplicationUser_UserId(applicationUserId),
 				Messages.CREDITCARDS + Messages.LIST);
+	}
+
+	@Override
+	public DataResult<List<CreditCardDto>> getCreditCardsByApplicationUser_UserId(int applicationUserId) {
+		List<CreditCard> creditCards = this.creditCardDao.getCreditCardByApplicationUser_UserId(applicationUserId);
+		List<CreditCardDto> creditCardsDto = creditCards.stream().map(creditCard -> modelMapper.map(creditCard, CreditCardDto.class))
+				.collect(Collectors.toList());
+		return new SuccessDataResult<List<CreditCardDto>>(creditCardsDto,
+				Messages.CREDITCARDS + Messages.LIST);
+
 	}
 
 	@Override
@@ -63,12 +91,7 @@ public class CreditCardManager implements CreditCardService {
 		if (result != null) {
 			return result;
 		}
-		CreditCard creditCard = new CreditCard();
-		creditCard.setCreditCardNumber(createCreditCardRequest.getCreditCardNumber());
-		creditCard.setApplicationUser(this.userService.findById(createCreditCardRequest.getUserId()).getData());
-		creditCard.setCvc(createCreditCardRequest.getCvc());
-		creditCard.setExpirationDate(createCreditCardRequest.getExpirationDate());
-		creditCard.setNameOnCard(createCreditCardRequest.getNameOnCard());
+		CreditCard creditCard = modelMapper.map(createCreditCardRequest, CreditCard.class);
 
 		this.creditCardDao.save(creditCard);
 		return new SuccessResult(Messages.CREDITCARD + Messages.ADD);
@@ -82,13 +105,8 @@ public class CreditCardManager implements CreditCardService {
 		if (result != null) {
 			return result;
 		}
-		CreditCard creditCard = creditCardDao.getById(updateCreditCardRequest.getCreditCardId());
-		creditCard.setCreditCardNumber(updateCreditCardRequest.getCreditCardNumber());
-		creditCard.setApplicationUser(this.userService.findById(updateCreditCardRequest.getUserId()).getData());
-		creditCard.setCvc(updateCreditCardRequest.getCvc());
-		creditCard.setExpirationDate(updateCreditCardRequest.getExpirationDate());
-		creditCard.setNameOnCard(updateCreditCardRequest.getNameOnCard());
-		
+		CreditCard creditCard = modelMapper.map(updateCreditCardRequest, CreditCard.class);
+
 		this.creditCardDao.save(creditCard);
 		return new SuccessResult(Messages.CREDITCARD + Messages.UPDATE);
 	}

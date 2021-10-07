@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
 
 import com.etiya.ReCapProject.business.constants.Messages;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,6 +22,9 @@ import lombok.Setter;
 @Validated
 public class CreateRentalRequest {
 
+	@JsonIgnore
+	private int rentalId;
+	
 	@NotNull(message = Messages.NOTNULL)
 	private int carId;
 	
@@ -46,7 +50,7 @@ public class CreateRentalRequest {
 	private boolean saveCreditCard;
 	
 	@NotNull(message = Messages.NOTNULL)
-	private int userId;
+	private int applicationUserUserUserId;
 	
 	private List<Integer> additionalService;
 	

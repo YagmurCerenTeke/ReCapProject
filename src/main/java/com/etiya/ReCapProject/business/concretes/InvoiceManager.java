@@ -2,7 +2,9 @@ package com.etiya.ReCapProject.business.concretes;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,28 +18,46 @@ import com.etiya.ReCapProject.core.utilities.results.SuccessDataResult;
 import com.etiya.ReCapProject.core.utilities.results.SuccessResult;
 import com.etiya.ReCapProject.dataAccess.abstracts.InvoiceDao;
 import com.etiya.ReCapProject.entities.concretes.Invoice;
+import com.etiya.ReCapProject.entities.dto.InvoiceDto;
 import com.etiya.ReCapProject.entities.requests.invoiceRequests.DeleteInvoiceRequest;
 
 @Service
 public class InvoiceManager implements InvoiceService {
 
 	private InvoiceDao invoiceDao;
+	private ModelMapper modelMapper;
 
 	@Autowired
-	public InvoiceManager(InvoiceDao invoiceDao) {
+	public InvoiceManager(InvoiceDao invoiceDao, ModelMapper modelMapper) {
 		super();
 		this.invoiceDao = invoiceDao;
-	
+		this.modelMapper = modelMapper;
 	}
 
 	@Override
-	public DataResult<List<Invoice>> getAll() {
+	public DataResult<List<Invoice>> findAll() {
 		return new SuccessDataResult<List<Invoice>>(this.invoiceDao.findAll(), Messages.INVOICES + Messages.LIST);
 	}
 
 	@Override
-	public DataResult<Invoice> getById(int invoiceId) {
+	public DataResult<List<InvoiceDto>> getAll() {
+		List<Invoice> invoices = this.invoiceDao.findAll();
+		List<InvoiceDto> invoicesDto = invoices.stream().map(brand -> modelMapper.map(brand, InvoiceDto.class))
+				.collect(Collectors.toList());
+		
+		return new SuccessDataResult<List<InvoiceDto>>(invoicesDto, Messages.INVOICES + Messages.LIST);
+	}
+	
+	@Override
+	public DataResult<Invoice> findById(int invoiceId) {
 		return new SuccessDataResult<Invoice>(this.invoiceDao.getById(invoiceId), Messages.INVOICE + Messages.LIST);
+	}
+
+	@Override
+	public DataResult<InvoiceDto> getById(int invoiceId) {
+		Invoice invoice =this.invoiceDao.getById(invoiceId);
+		
+		return new SuccessDataResult<InvoiceDto>(modelMapper.map(invoice, InvoiceDto.class), Messages.INVOICE + Messages.LIST);
 	}
 
 	@Override
@@ -95,14 +115,22 @@ public class InvoiceManager implements InvoiceService {
 	}
 
 	@Override
-	public DataResult<List<Invoice>> findInvoicesBetween(Date endDate, Date startDate) {
-		return new SuccessDataResult<List<Invoice>>(this.invoiceDao.findAllByCreationDateBetween(endDate, startDate),
+	public DataResult<List<InvoiceDto>> findInvoicesBetween(Date endDate, Date startDate) {
+		List<Invoice> invoices = this.invoiceDao.findAllByCreationDateBetween(endDate, startDate);
+		List<InvoiceDto> invoicesDto = invoices.stream().map(brand -> modelMapper.map(brand, InvoiceDto.class))
+				.collect(Collectors.toList());
+		
+		return new SuccessDataResult<List<InvoiceDto>>(invoicesDto,
 				Messages.INVOICES + Messages.LIST);
 	}
 
 	@Override
-	public DataResult<List<Invoice>> getByRental_ApplicationUser_UserId(int userId) {
-		return new SuccessDataResult<List<Invoice>>(this.invoiceDao.getByRental_ApplicationUser_UserId(userId),
+	public DataResult<List<InvoiceDto>> getByRental_ApplicationUser_UserId(int userId) {
+		List<Invoice> invoices = this.invoiceDao.getByRental_ApplicationUser_UserId(userId);
+		List<InvoiceDto> invoicesDto = invoices.stream().map(brand -> modelMapper.map(brand, InvoiceDto.class))
+				.collect(Collectors.toList());
+		
+		return new SuccessDataResult<List<InvoiceDto>>(invoicesDto,
 				Messages.INVOICES + Messages.LIST);
 	}
 //

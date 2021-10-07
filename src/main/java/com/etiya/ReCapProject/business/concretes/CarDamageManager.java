@@ -1,6 +1,5 @@
 package com.etiya.ReCapProject.business.concretes;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,7 +14,6 @@ import com.etiya.ReCapProject.core.utilities.results.Result;
 import com.etiya.ReCapProject.core.utilities.results.SuccessDataResult;
 import com.etiya.ReCapProject.core.utilities.results.SuccessResult;
 import com.etiya.ReCapProject.dataAccess.abstracts.CarDamageDao;
-import com.etiya.ReCapProject.entities.concretes.Car;
 import com.etiya.ReCapProject.entities.concretes.CarDamage;
 import com.etiya.ReCapProject.entities.dto.CarDamageDto;
 import com.etiya.ReCapProject.entities.requests.carDamageRequests.CreateCarDamageRequest;
@@ -44,14 +42,8 @@ public class CarDamageManager implements CarDamageService {
 	public DataResult<List<CarDamageDto>> getAll() {
 		
 		List<CarDamage> carDamages = this.carDamageDao.findAll();
-		List<CarDamageDto> carDamagesDto = new ArrayList<CarDamageDto>();
-		
-		for (CarDamage carDamage : carDamages) {
-			CarDamageDto mappedCarDamage =  modelMapper.map(carDamage, CarDamageDto.class);
-			mappedCarDamage.setCarId(carDamage.getCar().getCarId()); 
-			
-			carDamagesDto.add(mappedCarDamage);
-		}
+		List<CarDamageDto> carDamagesDto = carDamages.stream().map(carDamage -> modelMapper.map(carDamage, CarDamageDto.class))
+				.collect(Collectors.toList());
 		
 		return new SuccessDataResult<List<CarDamageDto>>(carDamagesDto, Messages.DAMAGES + Messages.LIST);
 	}
@@ -65,9 +57,6 @@ public class CarDamageManager implements CarDamageService {
 	public DataResult<List<CarDamageDto>> getByCarId(int carId) {
 		List<CarDamageDto> carDamagesDto = this.carDamageDao.getByCar_CarId(carId).stream().map(carDamage -> 
 		modelMapper.map(carDamage, CarDamageDto.class)).collect(Collectors.toList());
-		for (CarDamageDto carDamageDto : carDamagesDto) {
-			carDamageDto.setCarId(carId);
-		}
 		
 		return new SuccessDataResult<List<CarDamageDto>>(carDamagesDto, Messages.DAMAGES + Messages.LIST);
 	}
@@ -75,9 +64,6 @@ public class CarDamageManager implements CarDamageService {
 	@Override
 	public Result add(CreateCarDamageRequest createCarDamageRequest) {
 		CarDamage carDamage = modelMapper.map(createCarDamageRequest, CarDamage.class);
-		Car car = new Car();
-		car.setCarId(createCarDamageRequest.getCarId());
-		carDamage.setCar(car);
 		
 		this.carDamageDao.save(carDamage);
 		return new SuccessResult(Messages.DAMAGE + Messages.ADD);
@@ -86,9 +72,7 @@ public class CarDamageManager implements CarDamageService {
 	@Override
 	public Result update(UpdateCarDamageRequest updateCarDamageRequest) {
 		CarDamage carDamage = modelMapper.map(updateCarDamageRequest, CarDamage.class);
-		Car car = new Car();
-		car.setCarId(updateCarDamageRequest.getCarId());
-		carDamage.setCar(car);
+
 		this.carDamageDao.save(carDamage);
 		return new SuccessResult(Messages.DAMAGE + Messages.UPDATE);
 	}
